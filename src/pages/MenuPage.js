@@ -11,6 +11,7 @@ const MenuPage = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isOrdering, setIsOrdering] = useState(false);
   const [selectedCafe, setSelectedCafe] = useState("");
+  const [paymentStatus, setPaymentStatus] = useState(null); // New state for payment status
 
   useEffect(() => {
     axios
@@ -71,6 +72,7 @@ const MenuPage = () => {
           title: title,
           description: description,
         },
+        
         phoneNumber: phone, // Ensure phoneNumber is included
         cafeName: cafe, // Ensure cafeName is included
         itemOrdered: item.name // Ensure itemOrdered is included
@@ -90,7 +92,6 @@ const MenuPage = () => {
       throw error; // Throw error to be handled by the calling function
     }
   };
-  
 
   const placeOrder = async (name, phone, item, cafe, txRef) => {
     try {
@@ -120,6 +121,32 @@ const MenuPage = () => {
     setCustomerName("");
     setPhoneNumber("");
   };
+
+  // Function to check payment status and update order
+  const checkPaymentStatus = async (txRef) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/payment/verify`, {
+        params: { tx_ref: txRef }
+      });
+      
+      if (response.status === 200) {
+        setPaymentStatus("Payment Successful");
+      } else {
+        setPaymentStatus("Payment Failed");
+      }
+    } catch (error) {
+      setPaymentStatus("Error Checking Payment Status");
+    }
+  };
+
+  // Handle payment status check if tx_ref is available in URL params
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const txRef = queryParams.get('tx_ref');
+    if (txRef) {
+      checkPaymentStatus(txRef);
+    }
+  }, []);
 
   return (
     <div className="container">
@@ -232,6 +259,13 @@ const MenuPage = () => {
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* Display payment status */}
+      {paymentStatus && (
+        <div className="payment-status">
+          <h2>{paymentStatus}</h2>
         </div>
       )}
     </div>

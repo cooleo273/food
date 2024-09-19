@@ -9,14 +9,16 @@ import PrivateRoute from './pages/ProtectedRoute';
 import PaymentVerificationPage from './pages/PaymentVerificationPage';
 import CallbackPage from './pages/PaymentVerificationPage';
 
+
 function App() {
   return (
     <Router>
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<MenuPage />} />
-        <Route path="/callback" element={<CallbackPage/>} />
+        <Route path="/payment/callback " element={<CallbackPage/>} />
         <Route path="/admin-login" element={<AdminLogin />} />
+        
 
         {/* Protected Admin Routes */}
         <Route
