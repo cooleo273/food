@@ -10,7 +10,7 @@ const MenuPage = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [cart, setCart] = useState([]); // State to hold cart items
   const [isOrdering, setIsOrdering] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState(null); // Payment status
+  const [paymentStatus] = useState(null); // Payment status
 
   useEffect(() => {
     axios
