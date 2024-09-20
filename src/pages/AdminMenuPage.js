@@ -33,7 +33,9 @@ const AdminMenuPage = () => {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
+        
       });
+      console.log(response.data)
       alert('Menu item added successfully!');
       setCafeName('');
       setItemName('');
