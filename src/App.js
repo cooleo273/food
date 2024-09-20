@@ -6,7 +6,7 @@ import AdminMenuPage from './pages/AdminMenuPage';
 import AdminUpdateMenuPage from './pages/AdminUpdatePage';
 import AdminLogin from './pages/AdminLogin';
 import PrivateRoute from './pages/ProtectedRoute';
-import PaymentVerificationPage from './pages/PaymentVerificationPage';
+
 import CallbackPage from './pages/PaymentVerificationPage';
 
 

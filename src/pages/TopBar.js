@@ -9,10 +9,9 @@ const TopBar = () => {
         <img src={img1} alt='dfoubds'/>
       </div>
       <nav className="nav-links">
-        <a href="#home">Home</a>
-        <a href="#menu">Menu</a>
-        <a href="#orders">Orders</a>
-        <a href="#contact">Contact Us</a>
+        <a href="/">Menu</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact Us</a>
       </nav>
     </div>
   );
