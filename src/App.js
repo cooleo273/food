@@ -6,9 +6,7 @@ import AdminMenuPage from './pages/AdminMenuPage';
 import AdminUpdateMenuPage from './pages/AdminUpdatePage';
 import AdminLogin from './pages/AdminLogin';
 import PrivateRoute from './pages/ProtectedRoute';
-
 import CallbackPage from './pages/PaymentVerificationPage';
-
 
 function App() {
   return (
@@ -16,9 +14,8 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<MenuPage />} />
-        <Route path="/payment/callback " element={<CallbackPage/>} />
+        <Route path="/payment/callback" element={<CallbackPage />} />
         <Route path="/admin-login" element={<AdminLogin />} />
-        
 
         {/* Protected Admin Routes */}
         <Route
