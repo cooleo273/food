@@ -1,6 +1,7 @@
+// MenuPage.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./styles.css"; // Ensure the CSS file is imported
+import "./styles.css";
 import TopBar from "./TopBar";
 import img from "../assets/allen-rad-OCHMcVOWRAU-unsplash.jpg";
 
@@ -8,10 +9,10 @@ const MenuPage = () => {
   const [menus, setMenus] = useState([]);
   const [customerName, setCustomerName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [cart, setCart] = useState([]); // State to hold cart items
   const [isOrdering, setIsOrdering] = useState(false);
-  const [selectedCafe, setSelectedCafe] = useState("");
-  const [paymentStatus, setPaymentStatus] = useState(null); // New state for payment status
+  const [activeTab, setActiveTab] = useState("breakfast"); // Active tab state
+  const [isCartVisible, setIsCartVisible] = useState(false);
 
   useEffect(() => {
     axios
@@ -24,21 +25,59 @@ const MenuPage = () => {
       });
   }, []);
 
-  const handleOrderClick = (item, cafe) => {
-    setSelectedItem(item);
-    setSelectedCafe(cafe);
-    setIsOrdering(true);
+  const toggleCart = () => {
+    setIsCartVisible(!isCartVisible);
   };
 
-  const handleOrderSubmit = async (event) => {
+  // Remove item from cart by its unique ID and cafe name
+  const handleRemoveFromCart = (itemToRemove) => {
+    const newCart = cart.filter(
+      (item) =>
+        item._id !== itemToRemove._id || item.cafeName !== itemToRemove.cafeName
+    );
+    setCart(newCart); // Update the cart with the item removed
+  };
+
+  // Handle checkout (payment for all cart items)
+  const handleCheckout = async (event) => {
     event.preventDefault();
-    if (customerName && phoneNumber && selectedItem) {
+
+    if (customerName && phoneNumber && cart.length > 0) {
       try {
-        const paymentResponse = await initiatePayment(customerName, phoneNumber, selectedItem, selectedCafe);
+        const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
+        const cafeName = cart[0].cafeName;
+        const itemOrdered = cart.map((item) => item.name).join(", ");
+
+        const paymentResponse = await initiatePayment(
+          customerName,
+          phoneNumber,
+          totalPrice,
+          cafeName,
+          itemOrdered
+        );
 
         if (paymentResponse && paymentResponse.payment_url) {
-          window.location.href = paymentResponse.payment_url;
-          await placeOrder(customerName, phoneNumber, selectedItem, selectedCafe, paymentResponse.txRef);
+          // Open payment URL in a new tab
+          const paymentWindow = window.open(
+            paymentResponse.payment_url,
+            "_blank"
+          );
+
+          // Delay redirect to return URL after payment
+          setTimeout(() => {
+            if (paymentWindow) {
+              paymentWindow.close(); // Close the payment window after delay
+            }
+            window.location.href = "http://localhost:3000"; // Redirect to your app
+          }, 10000); // Delay in milliseconds (e.g., 10000 for 10 seconds)
+
+          // Place order for the items
+          await placeOrder(
+            customerName,
+            phoneNumber,
+            cart,
+            paymentResponse.txRef
+          );
         } else {
           alert("Failed to get payment URL");
         }
@@ -47,69 +86,73 @@ const MenuPage = () => {
         alert("Failed to initiate payment");
       }
     } else {
-      alert("Please fill in all fields");
+      alert("Please fill in all fields and add items to the cart");
     }
   };
 
-  const initiatePayment = async (name, phone, item, cafe) => {
-    if (!item || !cafe) {
-      console.error('Item or cafe is not defined');
-      throw new Error('Item or cafe is not defined');
-    }
-  
-    const txRef = `CAF-${Date.now()}`; // Generate tx_ref
-    const title = `Payment for ${item.name}`.slice(0, 16); // Ensure title is within limits
-    const description = `Cafe order from ${cafe}`; // Ensure description is valid
-  
+  // Initiate payment for the entire cart
+  const initiatePayment = async (
+    name,
+    phone,
+    totalAmount,
+    cafeName,
+    itemOrdered
+  ) => {
+    const txRef = `CAF-${Date.now()}`; // Generate unique tx_ref
+    const title = `Order ${cart.length}`.slice(0, 16); // Ensure title doesn't exceed 16 characters
+    const orderedItems = cart.map((item) => item.name).join(", ");
+
     try {
-      const response = await axios.post("http://localhost:5000/api/payment/pay", {
-        amount: item.price, // Ensure amount is a number
-        currency: "ETB",
-        first_name: name,
-        tx_ref: txRef, // Ensure tx_ref is included
-        callback_url: `http://localhost:5000/api/payment/verify?tx_ref=${txRef}`,
-        customization: {
-          title: title,
-          description: description,
-        },
-        
-        phoneNumber: phone, // Ensure phoneNumber is included
-        cafeName: cafe, // Ensure cafeName is included
-        itemOrdered: item.name // Ensure itemOrdered is included
-      });
-  
-      // Log the entire response to see its structure
-      console.log("Payment response:", response.data);
-  
-      // Check for the expected structure
+      const response = await axios.post(
+        "http://localhost:5000/api/payment/pay",
+        {
+          amount: totalAmount,
+          currency: "ETB",
+          first_name: name,
+          tx_ref: txRef,
+          callback_url: `http://localhost:5000/api/payment/verify?tx_ref=${txRef}`,
+          returnUrl: "http://localhost:3000",
+          customization: {
+            title: title,
+            description: `Payment for ${cart.length} items`,
+          },
+          phoneNumber: phone,
+          cafeName: cafeName,
+          itemOrdered: orderedItems,
+        }
+      );
+
       if (response.data && response.data.payment_url) {
         return { payment_url: response.data.payment_url, txRef };
       } else {
         throw new Error("Invalid response format");
       }
     } catch (error) {
-      console.error("Payment initialization error:", error.response ? error.response.data : error.message);
-      throw error; // Throw error to be handled by the calling function
+      console.error(
+        "Payment initialization error:",
+        error.response ? error.response.data : error.message
+      );
+      throw error;
     }
   };
 
-  const placeOrder = async (name, phone, item, cafe, txRef) => {
+  // Place order for all cart items
+  const placeOrder = async (name, phone, items, txRef) => {
     try {
       await axios.post("http://localhost:5000/api/orders", {
         customerName: name,
         phoneNumber: phone,
-        itemOrdered: item.name,
-        cafeName: cafe,
-        tx_ref: txRef, // Ensure this value is passed
-        paymentStatus: "pending", // or other default status
-        delivered: false // Default value
+        itemsOrdered: items.map((item) => item.name), // Array of item names
+        cafeNames: items.map((item) => item.cafeName), // Array of cafe names
+        tx_ref: txRef,
+        paymentStatus: "pending",
+        delivered: false,
       });
-      alert(`Order for ${item.name} from ${cafe} has been placed!`);
+      alert(`Your order has been placed!`);
       setIsOrdering(false);
       setCustomerName("");
       setPhoneNumber("");
-      setSelectedItem(null);
-      setSelectedCafe("");
+      setCart([]); // Clear the cart after placing the order
     } catch (error) {
       console.error("There was an error placing the order!", error);
     }
@@ -117,72 +160,124 @@ const MenuPage = () => {
 
   const closeModal = () => {
     setIsOrdering(false);
-    setSelectedItem(null);
     setCustomerName("");
     setPhoneNumber("");
   };
 
-  // Function to check payment status and update order
-  const checkPaymentStatus = async (txRef) => {
-    try {
-      const response = await axios.get(`http://localhost:5000/api/payment/verify`, {
-        params: { tx_ref: txRef }
-      });
-      
-      if (response.status === 200) {
-        setPaymentStatus("Payment Successful");
-      } else {
-        setPaymentStatus("Payment Failed");
-      }
-    } catch (error) {
-      setPaymentStatus("Error Checking Payment Status");
+  const filteredMenus = menus
+    .map((menu) => ({
+      cafe: menu.cafe,
+      items: menu.items.filter((item) => item.category === activeTab),
+    }))
+    .filter((menu) => menu.items.length > 0);
+
+  // Add item to cart
+  const handleAddToCart = (item, cafe) => {
+    const existingItemIndex = cart.findIndex(
+      (cartItem) => cartItem._id === item._id && cartItem.cafeName === cafe
+    );
+
+    if (existingItemIndex === -1) {
+      const newItem = { ...item, cafeName: cafe, quantity: 1 }; // Initialize quantity to 1
+      setCart((prevCart) => [...prevCart, newItem]);
+    } else {
+      const updatedCart = [...cart];
+      updatedCart[existingItemIndex].quantity += 1; // Increase quantity by 1
+      setCart(updatedCart);
     }
   };
 
-  // Handle payment status check if tx_ref is available in URL params
-  useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const txRef = queryParams.get('tx_ref');
-    if (txRef) {
-      checkPaymentStatus(txRef);
-    }
-  }, []);
+  // Other methods remain the same...
 
   return (
     <div className="container">
-      <TopBar />
+      <TopBar toggleCart={toggleCart} cartCount={cart.length} />
+      {/* Tabs for categories */}
+      <div className="tabs">
+        {["breakfast", "lunch", "dessert", "drinks"].map((category) => (
+          <button
+            key={category}
+            className={`tab-button ${activeTab === category ? "active" : ""}`}
+            onClick={() => setActiveTab(category)}
+          >
+            {category.charAt(0).toUpperCase() + category.slice(1)}
+          </button>
+        ))}
+      </div>
 
-      {menus.length > 0 ? (
-        menus.map((menu) => (
-          <div key={menu.cafe} className="menu-section">
-            <h2>{menu.cafe}</h2>
-            <ul className="menu-list">
-              {menu.items.map((item) => (
-                <li key={item._id} className="menu-item">
-                  <img
-                    src={`http://localhost:5000/${item.photo}` || img} // Fallback to default image if no photo
-                    alt={item.name}
-                    className="menu-item-img"
-                  />
-                  <div className="price-and-name">
-                    <h3>{item.name}</h3>
-                    <p>{item.description}</p> {/* Display the description */}
-                    <h4 className="price">${item.price.toFixed(2)}</h4>
-                  </div>
+      {/* Menu Items based on selected tab */}
+      <div className="menu-and-cart">
+        <div className="menu-section">
+          {filteredMenus.length > 0 ? (
+            filteredMenus.map((menu) => (
+              <div key={menu.cafe}>
+                <h2>{menu.cafe}</h2>
+                <ul className="menu-list">
+                  {menu.items.map((item) => (
+                    <li key={item._id} className="menu-item">
+                      <img
+                        src={`http://localhost:5000/${item.photo}` || img}
+                        alt={item.name}
+                        className="menu-item-img"
+                      />
+                      <div className="price-and-name">
+                        <h4>{item.name}</h4>
+                        <p>{item.description}</p>
+                        <h4 className="price">{item.price.toFixed(2)} ETB</h4>
+                      </div>
+                      <button
+                        className="order-button"
+                        onClick={() => handleAddToCart(item, menu.cafe)}
+                      >
+                        Add to Cart
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          ) : (
+            <p>No items available for {activeTab}.</p>
+          )}
+        </div>
+
+        {/* Cart Section */}
+        {isCartVisible && (
+          <div className="cart-section">
+            
+            <ul className="cart-list">
+              {cart.map((item, index) => (
+                <li key={index} className="cart-item">
+                  <h3>
+                    {item.name} ({item.quantity})
+                  </h3>
+                  <p>{(item.price * item.quantity).toFixed(2)}ETB</p>
                   <button
-                    className="order-button"
-                    onClick={() => handleOrderClick(item, menu.cafe)}
+                    className="remove-button"
+                    onClick={() => handleRemoveFromCart(item)}
                   >
-                    Order Now
+                    &times;{" "}
+                    {/* This represents the multiplication sign, often used as an "X" */}
                   </button>
                 </li>
               ))}
             </ul>
+            <h3>
+              Total:
+              {cart
+                .reduce((sum, item) => sum + item.price * item.quantity, 0)
+                .toFixed(2)}{" "}
+              ETB
+            </h3>
+            <button
+              onClick={() => setIsOrdering(true)}
+              className="checkout-button"
+            >
+              Checkout
+            </button>
           </div>
-        ))
-      ) : (
-        <p>Loading menus...</p>
-      )}
+        )}
+      </div>
 
       {isOrdering && (
         <div
@@ -193,79 +288,27 @@ const MenuPage = () => {
             <button className="close-modal" onClick={closeModal}>
               &times;
             </button>
-            <h2>Place Your Order</h2>
-            <form onSubmit={handleOrderSubmit} className="order-form">
-              <div>
-                <label>
-                  Name:
-                  <input
-                    type="text"
-                    value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
-                    className="order-input"
-                  />
-                </label>
-              </div>
-              <div>
-                <label>
-                  Phone Number:
-                  <input
-                    type="text"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    className="order-input"
-                  />
-                </label>
-              </div>
-              <div>
-                <label>
-                  Item:
-                  <input
-                    type="text"
-                    value={selectedItem ? selectedItem.name : ""}
-                    disabled
-                    className="order-input"
-                  />
-                </label>
-              </div>
-              <div>
-                <label>
-                  Cafe:
-                  <input
-                    type="text"
-                    value={selectedCafe}
-                    disabled
-                    className="order-input"
-                  />
-                </label>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "10px",
-                }}
-              >
-                <button type="submit" className="submit-order-button">
-                  Submit Order
-                </button>
-                <button
-                  type="button"
-                  className="cancel-button"
-                  onClick={closeModal}
-                >
-                  Cancel
-                </button>
-              </div>
+            <h2>Enter Your Information</h2>
+            <form onSubmit={handleCheckout}>
+              <input
+                type="text"
+                placeholder="Your Name"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                required
+              />
+              <input
+                type="text"
+                placeholder="Phone Number"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                required
+              />
+              <button type="submit" className="submit-button">
+                Submit
+              </button>
             </form>
           </div>
-        </div>
-      )}
-
-      {/* Display payment status */}
-      {paymentStatus && (
-        <div className="payment-status">
-          <h2>{paymentStatus}</h2>
         </div>
       )}
     </div>

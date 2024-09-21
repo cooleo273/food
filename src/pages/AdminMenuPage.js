@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import './styles.css'; // Ensure the CSS file is imported
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import axios from "axios";
+import "./styles.css"; // Ensure the CSS file is imported
+import { useNavigate } from "react-router-dom";
 
 const AdminMenuPage = () => {
-  const [cafeName, setCafeName] = useState('');
-  const [itemName, setItemName] = useState('');
-  const [itemPrice, setItemPrice] = useState('');
-  const [itemDescription, setItemDescription] = useState(''); // New state for description
+  const [cafeName, setCafeName] = useState("");
+  const [itemName, setItemName] = useState("");
+  const [itemPrice, setItemPrice] = useState("");
+  const [itemDescription, setItemDescription] = useState(""); // New state for description
+  const [category, setCategory] = useState(""); // New state for category
   const [photo, setPhoto] = useState(null);
+ 
   const navigate = useNavigate();
 
   const handleFileChange = (e) => {
@@ -16,34 +18,46 @@ const AdminMenuPage = () => {
   };
 
   const handleAddMenu = async () => {
-    if (!cafeName || !itemName || !itemPrice || !itemDescription || !photo) {
-      alert('Please fill in all fields and upload a photo');
+    if (
+      !cafeName ||
+      !itemName ||
+      !itemPrice ||
+      !itemDescription ||
+      !category ||
+      !photo
+    ) {
+      alert("Please fill in all fields and upload a photo");
       return;
     }
 
     const formData = new FormData();
-    formData.append('cafe', cafeName);
-    formData.append('name', itemName);
-    formData.append('price', itemPrice);
-    formData.append('description', itemDescription); // Add description to form data
-    formData.append('photo', photo);
+    formData.append("cafe", cafeName);
+    formData.append("name", itemName);
+    formData.append("price", itemPrice);
+    formData.append("description", itemDescription); // Add description to form data
+    formData.append("category", category); // Add category to form data
+    formData.append("photo", photo);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/menu', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+      const response = await axios.post(
+        "http://localhost:5000/api/menu",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
-        
-      });
-      console.log(response.data)
-      alert('Menu item added successfully!');
-      setCafeName('');
-      setItemName('');
-      setItemPrice('');
-      setItemDescription(''); // Clear description field
+      );
+      console.log(response.data);
+      alert("Menu item added successfully!");
+      setCafeName("");
+      setItemName("");
+      setItemPrice("");
+      setItemDescription(""); // Clear description field
+      setCategory(""); // Clear category field
       setPhoto(null);
     } catch (error) {
-      console.error('There was an error adding the menu item!', error);
+      console.error("There was an error adding the menu item!", error);
     }
   };
 
@@ -73,11 +87,24 @@ const AdminMenuPage = () => {
           className="admin-menu-input"
         />
         <textarea
-          placeholder="Item Description" // Textarea for description
+          placeholder="Item Description"
           value={itemDescription}
           onChange={(e) => setItemDescription(e.target.value)}
           className="admin-menu-input"
         />
+       <select
+  className="select-dropdown"
+  value={category}  
+  onChange={(e) => setCategory(e.target.value)}  
+>
+  <option value="">Select a category</option> {/* Add a placeholder option */}
+  <option value="breakfast">Breakfast</option>
+  <option value="lunch">Lunch</option>
+  <option value="dessert">Dessert</option>
+  <option value="drinks">Drinks</option>
+</select>
+
+
         <input
           type="file"
           onChange={handleFileChange}
@@ -86,7 +113,10 @@ const AdminMenuPage = () => {
         <button onClick={handleAddMenu} className="admin-menu-button">
           Add Menu Item
         </button>
-        <button onClick={() => navigate('/admin/updatemenu')} className="admin-menu-button">
+        <button
+          onClick={() => navigate("/admin/updatemenu")}
+          className="admin-menu-button"
+        >
           Update Menu
         </button>
       </div>
