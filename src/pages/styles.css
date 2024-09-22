@@ -313,21 +313,7 @@ body {
   background-color: #218838;
 }
 
-@media (max-width: 768px) {
-  .admin-menu-container {
-    width: 90%;
-    padding: 15px;
-  }
 
-  .admin-menu-header {
-    font-size: 24px;
-  }
-
-  .admin-menu-button {
-    font-size: 14px;
-    padding: 10px;
-  }
-}
 
 .order-button:hover {
   background-color: #FE8C00;
@@ -988,27 +974,51 @@ Copy code
   cursor: pointer;
 }
 
-
 @media (max-width: 768px) {
-  .menu-item {
-    width: calc(50% - 20px); /* Two items per row */
-  }
-  .admin-form,
   .admin-menu-container {
-    width: 90%; /* Full width on smaller screens */
+    width: 90%;
+    padding: 15px;
   }
-  h1, h2 {
-    font-size: 20px; /* Smaller header sizes */
+
+  .admin-menu-header {
+    font-size: 24px;
+  }
+
+  .admin-menu-button {
+    font-size: 14px;
+    padding: 10px;
+  }
+  .top-bar{
+    gap: 3%;
+  }
+  .tabs button{
+    margin: 1rem;
+  }
+  .menu-section{
+    margin: 0rem;
+  }
+  .logo img{
+    width: 7rem;
   }
 }
 
+
 @media (max-width: 480px) {
-  .menu-item {
-    width: 100%; /* One item per row */
+ 
+  .tabs button{
+    margin: 0.5rem;
+    font-size: 12px;
+    padding: 7px 10px;
+
+  } 
+  .tabs{
+    margin: 0rem;
   }
-  .menu-item img {
-    width: auto; /* Maintain aspect ratio */
-    height: auto; /* Maintain aspect ratio */
+  .menu-item{
+    width: 70%;
+  }
+  .my-cart-button{
+    font-size: 12px;
   }
   .my-cart-button,
   .admin-form button,

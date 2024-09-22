@@ -10,9 +10,7 @@ const TopBar = ({ toggleCart, cartCount }) => {
         <img src={img1} alt='Logo' />
       </div>
       <nav className="nav-links">
-        <a href="/">Menu</a>
-        <a href="/about">About</a>
-        <a href="/contact">Contact Us</a>
+        
         <div className="cart-button-container">
           <button className="my-cart-button" onClick={toggleCart}>
             My Cart
