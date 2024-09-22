@@ -1,11 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 /* General Styles */
 body {
-  font-family: "Montserrat", sans-serif;
-    font-weight: 700;
-  font-style: normal;
-  background-color: #f7f7f7;
+  font-family: 'Montserrat', sans-serif;
+  background-color: #f4f4f9;
   margin: 0;
+  font-weight: 500;
   padding: 0;
 }
 
@@ -180,7 +179,6 @@ body {
 /* General styles for AdminPage */
 .admin-container {
   padding: 20px;
-  font-family: Arial, sans-serif;
 }
 
 .admin-header {
@@ -238,16 +236,11 @@ body {
 /* Styles for AdminMenuPage */
 /* styles.css */
 
-body {
-  font-family: 'Roboto', sans-serif;
-  background-color: #f4f4f9;
-  margin: 0;
-  padding: 0;
-}
+
 
 .admin-menu-container {
   width: 100%;
-  max-width: 600px;
+  max-width: 400px;
   margin: 50px auto;
   padding: 20px;
   background-color: #fff;
@@ -301,8 +294,8 @@ body {
 }
 
 .admin-menu-button {
-  padding: 12px;
-  font-size: 16px;
+  padding: 10px;
+  font-size: 13px;
   background-color: #28a745; /* Changed to a different color for variety */
   color: white;
   border: none;
@@ -514,7 +507,7 @@ h3{
   justify-content: space-around;
   align-items: center;
   background-color: white;
-  padding: 20px 20px;
+  padding: 50px 20px;
   color: white;
   gap: 42%;
   top: 0;
@@ -526,7 +519,6 @@ Copy code
   width: 90%;
   margin: 0 auto;
   padding: 20px;
-  font-family: Arial, sans-serif;
 }
 
 /* Tabs */
@@ -537,8 +529,8 @@ Copy code
 }
 
 .tab-button {
-  padding: 10px 20px;
-  margin: 0 5px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
   border: none;
   border-radius: 10px;
   background-color: #e0e0e0;
@@ -549,12 +541,12 @@ Copy code
 
 .tab-button:hover {
   background-color: #4CAF50;
-  color: white;
+  color: #ffffff;
 }
 
 .tab-button.active {
   background-color: #28a745;
-  color: white;
+  color: #4CAF50;
 }
 /* Cart Section */
 .cart-section {
@@ -647,18 +639,7 @@ Copy code
   background-color: #c82333;
 }
 
-.checkout-button {
-  margin-left: 1rem;
-  margin-top: 15px;
-  padding: 10px 20px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
+
 .price-and-name  h4{
   margin: 0rem;
 }
@@ -743,7 +724,6 @@ Copy code
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  font-family: Arial, sans-serif;
 }
 
 .admin-update-header {
@@ -827,7 +807,6 @@ Copy code
   align-items: center;
   height: 100vh;
   background-color: #f4f7fc;
-  font-family: Arial, sans-serif;
 }
 
 .admin-login-title {
@@ -907,7 +886,7 @@ Copy code
 .tabs {
   display: flex;
 
-  margin: 20px 0;
+  
   border: none;
   padding: 10px;
   border-radius: 8px;
@@ -920,7 +899,7 @@ Copy code
   border: none;
   border-radius: 5px;
   transition: background-color 0.3s, color 0.3s;
-  margin-left: 3rem;
+  margin: 0rem 3rem;
 }
 
 
@@ -930,6 +909,7 @@ Copy code
   color: white;
   border: 2px solid #4CAF50;
 }
+
 .tab-
 /* Order cards */
 .order-card {
@@ -967,19 +947,9 @@ Copy code
 }
 
 /* Logout and Add Menu buttons */
-.logout-button, .admin-menu-button {
-  background-color: #f44336;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  cursor: pointer;
-  font-size: 16px;
-  border-radius: 5px;
-  transition: background-color 0.3s;
-  margin-right: 10px;
-}
 
-.logout-button:hover, .admin-menu-button:hover {
+
+.logout-button:hover{
   background-color: #d32f2f;
 }
 /* Full Screen Cart Styles */

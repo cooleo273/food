@@ -1,0 +1,56 @@
+.navbar {
+    display: flex;
+    justify-content: center; /* Center the tabs */
+    padding: 10px; /* Add some padding for aesthetics */
+    position: relative; /* Needed for the indicator */
+  }
+  
+  .tabs {
+    display: flex;
+    position: relative; /* Needed for the indicator */
+  }
+  
+  .tab-button {
+    background: none; /* No background color */
+    border: none; /* No border */
+    border-radius: 15px; /* Rounded corners */
+    padding: 8px 16px; /* Smaller padding */
+    margin: 0 5px; /* Space between buttons */
+    cursor: pointer; /* Pointer cursor */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+  }
+  
+ 
+  
+  
+  
+  /* Indicator for the active tab */
+  .indicator {
+    position: absolute;
+    bottom: 0; /* Align to bottom of the buttons */
+    left: 0; /* Align to the left */
+    height: 4px; /* Height of the indicator */
+    background: #007BFF; /* Color of the indicator */
+    transition: left 0.3s ease; /* Smooth slide transition */
+  }
+  
+  .indicator.breakfast {
+    width: calc(100% / 4); /* Width for each button */
+    left: 0; /* Position for breakfast */
+  }
+  
+  .indicator.lunch {
+    width: calc(100% / 4); /* Width for each button */
+    left: calc(100% / 4); /* Position for lunch */
+  }
+  
+  .indicator.dessert {
+    width: calc(100% / 4); /* Width for each button */
+    left: calc(100% / 4 * 2); /* Position for dessert */
+  }
+  
+  .indicator.drinks {
+    width: calc(100% / 4); /* Width for each button */
+    left: calc(100% / 4 * 3); /* Position for drinks */
+  }
+  
