@@ -30,7 +30,7 @@ const CartModal = ({ isOpen, onClose, cartItems, initiatePayment, placeOrder, on
             if (paymentWindow) {
               paymentWindow.close(); // Close the payment window after delay
             }
-            window.location.href = "http://localhost:3000"; // Redirect to your app
+            window.location.href = "http://savoraddis.netlify.app"; // Redirect to your app
           }, 10000);
 
           await placeOrder(customerName, phoneNumber, cartItems, paymentResponse.txRef);

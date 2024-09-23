@@ -66,8 +66,7 @@ const MenuPage = () => {
         cafeName: cafeName,
         itemOrdered: orderedItems,
       });
-      console.log("Initiating payment with returnUrl:", returnUrl);
-
+      
 
       if (response.data && response.data.payment_url) {
         return { payment_url: response.data.payment_url, txRef };
