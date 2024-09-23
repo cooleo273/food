@@ -21,7 +21,7 @@
   
   .cart-modal-header {
     display: flex;
-    justify-content: space-between;
+    gap: 64%;
     padding: 10px 70px;
     background: #f0f0f0; /* Lighter header */
     border-bottom: 2px solid #e0e0e0; /* Thicker border */

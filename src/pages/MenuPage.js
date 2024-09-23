@@ -92,15 +92,14 @@ const MenuPage = () => {
     const txRef = `CAF-${Date.now()}`;
     const title = `Order ${cart.length}`.slice(0, 16);
     const orderedItems = cart.map((item) => item.name).join(", ");
-
+  
     try {
       const response = await axios.post("https://food-server-seven.vercel.app/api/payment/pay", {
         amount: totalAmount,
         currency: "ETB",
         first_name: name,
         tx_ref: txRef,
-        callback_url: `https://food-server-seven.vercel.app/api/payment/verify?tx_ref=${txRef}`,
-        returnUrl: "https://savoraddis.netlify.app",
+        callback_url: `https://food-server-seven.vercel.app/api/payment/verify?tx_ref=${txRef}`, // Only use callback URL for verification
         customization: {
           title: title,
           description: `Payment for ${cart.length} items`,
@@ -109,7 +108,7 @@ const MenuPage = () => {
         cafeName: cafeName,
         itemOrdered: orderedItems,
       });
-      
+  
       if (response.data && response.data.payment_url) {
         return { payment_url: response.data.payment_url, txRef };
       } else {
@@ -120,6 +119,7 @@ const MenuPage = () => {
       throw error;
     }
   };
+  
 
   const placeOrder = async (name, phone) => {
     try {
