@@ -100,6 +100,7 @@ const MenuPage = () => {
         first_name: name,
         tx_ref: txRef,
         callback_url: `https://food-server-seven.vercel.app/api/payment/verify?tx_ref=${txRef}`, // Only use callback URL for verification
+        returnUrl: "https://savoraddis.netlify.app",
         customization: {
           title: title,
           description: `Payment for ${cart.length} items`,
@@ -131,6 +132,7 @@ const MenuPage = () => {
         tx_ref: `CAF-${Date.now()}`,
         paymentStatus: "pending",
         delivered: false,
+
       });
 
       if (response.data) {
