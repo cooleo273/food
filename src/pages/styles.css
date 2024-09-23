@@ -15,6 +15,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   box-sizing: revert;
+  padding: 0rem !important;
 }
 .payment-verification-container {
   text-align: center;
@@ -357,10 +358,12 @@ h2 {
   color: #444;
   margin-left: 3.5rem;
 }
-
+.menu-section h2{
+  margin: 0rem;
+}
 /* Menu section styles */
 .menu-section {
-  margin: 2rem 4rem;
+  margin: 1rem 1rem;
 
 }
 .menu-select{
@@ -497,7 +500,7 @@ h3{
   background-color: white;
   padding: 50px 20px;
   color: white;
-  gap: 42%;
+  gap: 74%;
   top: 0;
   z-index: 1000;
 }
@@ -513,7 +516,7 @@ Copy code
 .tabs {
   display: flex;
   justify-content: center;
-  margin: 2rem;
+  margin: 0rem;
 }
 
 .tab-button {
@@ -873,14 +876,7 @@ Copy code
 }
 
 /* Tabs */
-.tabs {
-  display: flex;
 
-  
-  border: none;
-  padding: 10px;
-  border-radius: 8px;
-}
 
 .tabs button {
   padding: 10px 20px;
@@ -889,7 +885,7 @@ Copy code
   border: none;
   border-radius: 5px;
  background-color: white;
-  margin: 0rem 3rem;
+  margin: 0rem 2rem;
 }
 .tabs button:hover{
    background-color: #4CAF50;
