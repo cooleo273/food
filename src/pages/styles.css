@@ -952,7 +952,7 @@ Copy code
   gap: 3rem;
     /* WIDTH: 26REM; */
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     /* flex-wrap: NOWRAP; */
     justify-content: center;
     align-content: center;
