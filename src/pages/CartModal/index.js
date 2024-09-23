@@ -41,7 +41,7 @@ const CartModal = ({
               paymentWindow.close(); // Close the payment window after delay
             }
             window.location.href = "http://savoraddis.netlify.app"; // Redirect to your app
-          }, 10000);
+          }, 100000);
 
           await placeOrder(
             customerName,
@@ -83,11 +83,13 @@ const CartModal = ({
                       alt={item.name}
                       className="cart-item-img"
                     />
-                    
-<span>{item.quantity} {item.quantity > 1 ? item.name + 's' : item.name}</span>
-{/* Show quantity */}
-<span>{(item.price * item.quantity).toFixed(2)} ETB</span>
 
+                    <span>
+                      {item.quantity}{" "}
+                      {item.quantity > 1 ? item.name + "s" : item.name}
+                    </span>
+                    {/* Show quantity */}
+                    <span>{(item.price * item.quantity).toFixed(2)} ETB</span>
                   </div>
                   <button
                     className="remove-button"
