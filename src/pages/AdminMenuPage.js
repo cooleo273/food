@@ -65,13 +65,16 @@ const AdminMenuPage = () => {
     <div className="admin-menu-container">
       <h1 className="admin-menu-header">Admin Menu Page</h1>
       <div className="admin-menu-form">
-        <input
-          type="text"
-          placeholder="Cafe Name"
-          value={cafeName}
-          onChange={(e) => setCafeName(e.target.value)}
-          className="admin-menu-input"
-        />
+        <select
+          className="select-dropdown"
+          value={cafeName}  
+          onChange={(e) => setCafeName(e.target.value)}  
+        >
+          <option value="">Select a cafe</option> {/* Placeholder option */}
+          <option value="Cambridge">Cambridge</option>
+          <option value="Oxford">Oxford</option>
+        </select>
+        
         <input
           type="text"
           placeholder="Item Name"
@@ -93,17 +96,16 @@ const AdminMenuPage = () => {
           className="admin-menu-input"
         />
        <select
-  className="select-dropdown"
-  value={category}  
-  onChange={(e) => setCategory(e.target.value)}  
->
-  <option value="">Select a category</option> {/* Add a placeholder option */}
-  <option value="breakfast">Breakfast</option>
-  <option value="lunch">Lunch</option>
-  <option value="dessert">Dessert</option>
-  <option value="drinks">Drinks</option>
-</select>
-
+          className="select-dropdown"
+          value={category}  
+          onChange={(e) => setCategory(e.target.value)}  
+        >
+          <option value="">Select a category</option> {/* Add a placeholder option */}
+          <option value="breakfast">Breakfast</option>
+          <option value="lunch">Lunch</option>
+          <option value="dessert">Dessert</option>
+          <option value="drinks">Drinks</option>
+        </select>
 
         <input
           type="file"
