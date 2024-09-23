@@ -8,17 +8,19 @@ import Navbar from "./NavBarModal/index";
 
 const MenuPage = () => {
   const [menus, setMenus] = useState([]);
-   // State to hold cart items
-  const [activeTab, setActiveTab] = useState("breakfast"); // Active tab state
+  const [activeTab, setActiveTab] = useState("breakfast");
   const [isCartVisible, setIsCartVisible] = useState(false);
   const [cart, setCart] = useState(() => {
     const storedCart = localStorage.getItem("cart");
     return storedCart ? JSON.parse(storedCart) : [];
   });
+  
+  // State for order confirmation
+  const [orderDetails, setOrderDetails] = useState(null);
+  const [orderStatus, setOrderStatus] = useState("pending");
+
   useEffect(() => {
-    // Load cart from localStorage when the component mounts
     const storedCart = JSON.parse(localStorage.getItem("cart"));
-    console.log("Stored cart on mount:", storedCart); // Debugging line
     if (storedCart && Array.isArray(storedCart)) {
       setCart(storedCart);
     }
@@ -35,8 +37,6 @@ const MenuPage = () => {
   }, []);
 
   useEffect(() => {
-    // Save cart to localStorage whenever the cart is updated
-    console.log("Cart updated:", cart); // Debugging line
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
@@ -46,7 +46,7 @@ const MenuPage = () => {
 
   const handleRemoveFromCart = (itemToRemove) => {
     const updatedCart = cart.filter((item) => item._id !== itemToRemove._id);
-    setCart(updatedCart); // Update the cart in parent state
+    setCart(updatedCart);
   };
 
   const initiatePayment = async (name, phone, totalAmount, cafeName, itemOrdered) => {
@@ -84,7 +84,7 @@ const MenuPage = () => {
 
   const placeOrder = async (name, phone, items, txRef) => {
     try {
-      await axios.post("https://food-server-seven.vercel.app/api/orders", {
+      const response = await axios.post("https://food-server-seven.vercel.app/api/orders", {
         customerName: name,
         phoneNumber: phone,
         itemsOrdered: items.map((item) => item.name),
@@ -93,10 +93,21 @@ const MenuPage = () => {
         paymentStatus: "pending",
         delivered: false,
       });
-      alert(`Your order has been placed!`);
+
+      // Set order details and status
+      setOrderDetails({
+        customerName: name,
+        phoneNumber: phone,
+        itemsOrdered: items.map(item => item.name),
+        cafeNames: items.map(item => item.cafeName),
+        tx_ref: txRef,
+      });
+      setOrderStatus("Order placed successfully!");
       setCart([]); // Clear the cart after placing the order
+      alert(`Your order has been placed!`);
     } catch (error) {
       console.error("There was an error placing the order!", error);
+      setOrderStatus("Error placing order. Please try again.");
     }
   };
 
@@ -117,7 +128,7 @@ const MenuPage = () => {
         ...item, 
         cafeName: cafe, 
         quantity: 1, 
-        image: `https://food-server-seven.vercel.app/${item.photo}`
+        image: item.photo
       };
       setCart((prevCart) => [...prevCart, newItem]);
     } else {
@@ -166,6 +177,7 @@ const MenuPage = () => {
             <p>No menu items available</p>
           )}
         </div>
+        
         {isCartVisible && (
           <div className="cart-section">
             <CartModal
@@ -179,6 +191,29 @@ const MenuPage = () => {
           </div>
         )}
       </div>
+
+      {/* Order Confirmation Section */}
+      {orderDetails && (
+        <div className="order-confirmation">
+          <h2>Order Confirmation</h2>
+          <p>{orderStatus}</p>
+          <p>Customer Name: {orderDetails.customerName}</p>
+          <p>Phone Number: {orderDetails.phoneNumber}</p>
+          <h4>Items Ordered:</h4>
+          <ul>
+            {orderDetails.itemsOrdered.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+          <h4>Cafe(s):</h4>
+          <ul>
+            {orderDetails.cafeNames.map((cafe, index) => (
+              <li key={index}>{cafe}</li>
+            ))}
+          </ul>
+          <p>Transaction Reference: {orderDetails.tx_ref}</p>
+        </div>
+      )}
     </div>
   );
 };
