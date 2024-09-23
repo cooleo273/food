@@ -58,7 +58,7 @@ const MenuPage = () => {
         first_name: name,
         tx_ref: txRef,
         callback_url: `https://food-server-seven.vercel.app/api/payment/verify?tx_ref=${txRef}`,
-        returnUrl: "http://localhost:3000",
+        returnUrl: "https://savoraddis.netlify.app",
         customization: {
           title: title,
           description: `Payment for ${cart.length} items`,
