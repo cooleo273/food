@@ -14,10 +14,8 @@ const MenuPage = () => {
     const storedCart = localStorage.getItem("cart");
     return storedCart ? JSON.parse(storedCart) : [];
   });
-  
-  // State for order confirmation
   const [orderDetails, setOrderDetails] = useState(null);
-  const [orderStatus, setOrderStatus] = useState("pending");
+  const [orderStatus, setOrderStatus] = useState('');
 
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart"));
@@ -25,7 +23,6 @@ const MenuPage = () => {
       setCart(storedCart);
     }
 
-    // Fetch menus
     axios
       .get("https://food-server-seven.vercel.app/api/menu")
       .then((response) => {
@@ -93,8 +90,7 @@ const MenuPage = () => {
         paymentStatus: "pending",
         delivered: false,
       });
-  
-      // Set order details and status
+
       setOrderDetails({
         customerName: name,
         phoneNumber: phone,
@@ -104,13 +100,11 @@ const MenuPage = () => {
       });
       setOrderStatus("Order placed successfully!");
       setCart([]); // Clear the cart after placing the order
-      alert(`Your order has been placed!`);
     } catch (error) {
       console.error("There was an error placing the order!", error);
       setOrderStatus("Error placing order. Please try again.");
     }
   };
-  
 
   const filteredMenus = menus
     .map((menu) => ({
@@ -178,7 +172,6 @@ const MenuPage = () => {
             <p>No menu items available</p>
           )}
         </div>
-        
         {isCartVisible && (
           <div className="cart-section">
             <CartModal
@@ -193,25 +186,14 @@ const MenuPage = () => {
         )}
       </div>
 
-      {/* Order Confirmation Section */}
+      {orderStatus && <h3>{orderStatus}</h3>}
       {orderDetails && (
-        <div className="order-confirmation">
-          <h2>Order Confirmation</h2>
-          <p>{orderStatus}</p>
+        <div className="order-summary">
+          <h4>Order Summary</h4>
           <p>Customer Name: {orderDetails.customerName}</p>
           <p>Phone Number: {orderDetails.phoneNumber}</p>
-          <h4>Items Ordered:</h4>
-          <ul>
-            {orderDetails.itemsOrdered.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
-          <h4>Cafe(s):</h4>
-          <ul>
-            {orderDetails.cafeNames.map((cafe, index) => (
-              <li key={index}>{cafe}</li>
-            ))}
-          </ul>
+          <p>Items Ordered: {orderDetails.itemsOrdered.join(', ')}</p>
+          <p>Cafes: {orderDetails.cafeNames.join(', ')}</p>
           <p>Transaction Reference: {orderDetails.tx_ref}</p>
         </div>
       )}
