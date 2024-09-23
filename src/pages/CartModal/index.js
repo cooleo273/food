@@ -1,9 +1,16 @@
-import React from 'react';
-import './index.css'; // Import your CSS file for styling
+import React from "react";
+import "./index.css"; // Import your CSS file for styling
 
-const CartModal = ({ isOpen, onClose, cartItems, initiatePayment, placeOrder, onRemoveFromCart }) => {
-  const [customerName, setCustomerName] = React.useState('');
-  const [phoneNumber, setPhoneNumber] = React.useState('');
+const CartModal = ({
+  isOpen,
+  onClose,
+  cartItems,
+  initiatePayment,
+  placeOrder,
+  onRemoveFromCart,
+}) => {
+  const [customerName, setCustomerName] = React.useState("");
+  const [phoneNumber, setPhoneNumber] = React.useState("");
 
   if (!isOpen) return null;
 
@@ -25,7 +32,10 @@ const CartModal = ({ isOpen, onClose, cartItems, initiatePayment, placeOrder, on
         );
 
         if (paymentResponse && paymentResponse.payment_url) {
-          const paymentWindow = window.open(paymentResponse.payment_url, "_blank");
+          const paymentWindow = window.open(
+            paymentResponse.payment_url,
+            "_blank"
+          );
           setTimeout(() => {
             if (paymentWindow) {
               paymentWindow.close(); // Close the payment window after delay
@@ -33,7 +43,12 @@ const CartModal = ({ isOpen, onClose, cartItems, initiatePayment, placeOrder, on
             window.location.href = "http://savoraddis.netlify.app"; // Redirect to your app
           }, 10000);
 
-          await placeOrder(customerName, phoneNumber, cartItems, paymentResponse.txRef);
+          await placeOrder(
+            customerName,
+            phoneNumber,
+            cartItems,
+            paymentResponse.txRef
+          );
         } else {
           alert("Failed to get payment URL");
         }
@@ -63,11 +78,21 @@ const CartModal = ({ isOpen, onClose, cartItems, initiatePayment, placeOrder, on
               {cartItems.map((item, index) => (
                 <li key={index} className="cart-item">
                   <div className="image-container">
-                    <img src={item.image} alt={item.name} className="cart-item-img" />
-                    <span>{item.name}</span>
-                    <span>{item.price} ETB</span>
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="cart-item-img"
+                    />
+                    
+<span>{item.quantity} {item.quantity > 1 ? item.name + 's' : item.name}</span>
+{/* Show quantity */}
+<span>{(item.price * item.quantity).toFixed(2)} ETB</span>
+
                   </div>
-                  <button className="remove-button" onClick={() => onRemoveFromCart(item)}>
+                  <button
+                    className="remove-button"
+                    onClick={() => onRemoveFromCart(item)}
+                  >
                     &times;
                   </button>
                 </li>

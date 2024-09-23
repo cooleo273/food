@@ -14,7 +14,34 @@ const MenuPage = () => {
     const storedCart = localStorage.getItem("cart");
     return storedCart ? JSON.parse(storedCart) : [];
   });
+
+
+  
   const [orderDetails, setOrderDetails] = useState(null); // State for order details
+
+  const calculateTotalCount = () => {
+    return cart.reduce((sum, item) => sum + item.quantity, 0);
+  };
+
+  const handleAddToCart = (item, cafe) => {
+    const existingItemIndex = cart.findIndex(
+      (cartItem) => cartItem._id === item._id && cartItem.cafeName === cafe
+    );
+
+    if (existingItemIndex === -1) {
+      const newItem = { 
+        ...item, 
+        cafeName: cafe, 
+        quantity: 1, 
+        image: item.photo
+      };
+      setCart((prevCart) => [...prevCart, newItem]);
+    } else {
+      const updatedCart = [...cart];
+      updatedCart[existingItemIndex].quantity += 1; // Increment quantity
+      setCart(updatedCart);
+    }
+  };
 
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart"));
@@ -41,9 +68,19 @@ const MenuPage = () => {
   };
 
   const handleRemoveFromCart = (itemToRemove) => {
-    const updatedCart = cart.filter((item) => item._id !== itemToRemove._id);
+    const updatedCart = cart.map((item) => {
+      if (item._id === itemToRemove._id) {
+        if (item.quantity > 1) {
+          return { ...item, quantity: item.quantity - 1 }; // Decrease quantity
+        }
+        return null; // Mark for removal if quantity is 1
+      }
+      return item;
+    }).filter((item) => item !== null); // Filter out marked items
+  
     setCart(updatedCart);
   };
+  
 
   const initiatePayment = async (name, phone, totalAmount, cafeName) => {
     const txRef = `CAF-${Date.now()}`;
@@ -108,29 +145,11 @@ const MenuPage = () => {
     }))
     .filter((menu) => menu.items.length > 0);
 
-  const handleAddToCart = (item, cafe) => {
-    const existingItemIndex = cart.findIndex(
-      (cartItem) => cartItem._id === item._id && cartItem.cafeName === cafe
-    );
-
-    if (existingItemIndex === -1) {
-      const newItem = { 
-        ...item, 
-        cafeName: cafe, 
-        quantity: 1, 
-        image: item.photo
-      };
-      setCart((prevCart) => [...prevCart, newItem]);
-    } else {
-      const updatedCart = [...cart];
-      updatedCart[existingItemIndex].quantity += 1;
-      setCart(updatedCart);
-    }
-  };
+ 
 
   return (
     <div className="container">
-      <TopBar toggleCart={toggleCart} cartCount={cart.length} />
+      <TopBar toggleCart={toggleCart} cartCount={calculateTotalCount()} />
       <Navbar setActiveTab={setActiveTab} activeTab={activeTab} />
 
       <div className="menu-and-cart">
