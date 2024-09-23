@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Dropdown, DropdownButton } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import "./styles.css"; // Ensure the CSS file is imported
-import img1 from "../assets/7124045_logout_icon (1).png";
-import img2 from "../assets/8679876_menu_add_fill_icon.png";
+import img1 from "../assets/7124045_logout_icon (1).png"
+import img2 from "../assets/8679876_menu_add_fill_icon.png"
 
 const AdminStatusPage = () => {
   const [orders, setOrders] = useState([]);
@@ -19,20 +19,15 @@ const AdminStatusPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      .get("https://food-server-seven.vercel.app/api/orders")
-      .then((response) => {
-        setOrders(response.data);
-        setFilteredOrders(response.data);
-      });
+    axios.get("https://food-server-seven.vercel.app/api/orders").then((response) => {
+      setOrders(response.data);
+      setFilteredOrders(response.data);
+    });
   }, []);
 
   const updateStatus = (orderId, status) => {
     axios
-      .put(
-        `https://food-server-seven.vercel.app/api/orders/${orderId}/status`,
-        { status }
-      )
+      .put(`https://food-server-seven.vercel.app/api/orders/${orderId}/status`, { status })
       .then(() => {
         setOrders(
           orders.map((order) =>
@@ -111,10 +106,14 @@ const AdminStatusPage = () => {
             onClick={() => navigate("/admin/menu")}
             className="admin-menu-button"
           >
-            <img src={img2} alt="addmenu" className="logout-icon" />
+            <img src={img2} alt="addmenu" className="logout-icon"/>
           </button>
           <button onClick={handleLogout} className="logout-button">
-            <img src={img1} alt="Logout" className="logout-icon" />
+            <img
+              src={img1}
+              alt="Logout"
+              className="logout-icon"
+            />
             <p>Logout</p>
           </button>
         </div>
@@ -250,43 +249,30 @@ const AdminStatusPage = () => {
                   Payment Status: {order.paymentStatus}
                 </p>
 
-                <div className="buttons">
-                  <DropdownButton id="dropdown-basic-button" title="Actions">
-                    <Dropdown.Item
-                      onClick={() => updateStatus(order._id, "being made")}
-                    >
-                      Mark as Being Made
-                    </Dropdown.Item>
-                    <Dropdown.Item
-                      onClick={() =>
-                        updateStatus(order._id, "ready for pickup")
-                      }
-                    >
-                      Mark as Ready for Pickup
-                    </Dropdown.Item>
-                    <Dropdown.Item
-                      onClick={() =>
-                        updateStatus(order._id, "out for delivery")
-                      }
-                    >
-                      Mark as Out for Delivery
-                    </Dropdown.Item>
-                    <Dropdown.Item
-                      onClick={() => updateStatus(order._id, "delivered")}
-                    >
-                      Mark as Delivered
-                    </Dropdown.Item>
-                    <Dropdown.Item
-                      onClick={() => updateStatus(order._id, "cancelled")}
-                    >
-                      Mark as Cancelled
-                    </Dropdown.Item>
-                    <Dropdown.Divider />
-                    <Dropdown.Item onClick={() => deleteOrder(order._id)}>
-                      Delete Order
-                    </Dropdown.Item>
-                  </DropdownButton>
-                </div>
+                <div>
+  <DropdownButton id="dropdown-basic-button" title="Actions">
+    <Dropdown.Item onClick={() => updateStatus(order._id, "being made")}>
+      Mark as Being Made
+    </Dropdown.Item>
+    <Dropdown.Item onClick={() => updateStatus(order._id, "ready for pickup")}>
+      Mark as Ready for Pickup
+    </Dropdown.Item>
+    <Dropdown.Item onClick={() => updateStatus(order._id, "out for delivery")}>
+      Mark as Out for Delivery
+    </Dropdown.Item>
+    <Dropdown.Item onClick={() => updateStatus(order._id, "delivered")}>
+      Mark as Delivered
+    </Dropdown.Item>
+    <Dropdown.Item onClick={() => updateStatus(order._id, "cancelled")}>
+      Mark as Cancelled
+    </Dropdown.Item>
+    <Dropdown.Divider />
+    <Dropdown.Item onClick={() => deleteOrder(order._id)}>
+      Delete Order
+    </Dropdown.Item>
+  </DropdownButton>
+</div>
+
               </div>
             ))
           ) : (

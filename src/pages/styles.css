@@ -1,10 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 /* General Styles */
 body {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Montserrat', sans-serif !important;
   
   margin: 0;
-  font-weight: 500;
+  font-weight: 500 !important;
   padding: 0;
 }
 
@@ -14,6 +14,7 @@ body {
 .menu-list {
   display: flex;
   flex-wrap: wrap;
+  box-sizing: revert;
 }
 .payment-verification-container {
   text-align: center;
@@ -38,7 +39,7 @@ body {
   width: 15rem;
   margin: 10px;
   padding: 20px;
-  
+  box-sizing: revert;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s;
   flex-direction: column;
@@ -378,7 +379,8 @@ h3{
   margin: 1rem;
 }
 .price-and-name p{
-  font-size: 12px;
+  font-size: 14px;
+  margin: 0.8rem 0rem;
 }
 .menu-item div {
   margin-top: 10px;
@@ -538,7 +540,7 @@ Copy code
 .cart-section {
   margin: 5rem;
 }
-.menu-and-cart {
+.menu-and-cart .menu-container {
   display: flex;
   justify-content: space-between;
 }
@@ -615,7 +617,7 @@ Copy code
   color: white;
   border: none;
   border-radius: 5px;
-  padding: 5px 10px;
+  padding: 1px 10px;
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -628,6 +630,7 @@ Copy code
 
 .price-and-name  h4{
   margin: 0rem;
+  font-size: 18px;
 }
 /* Style for the select dropdown */
 .select-dropdown {

@@ -162,7 +162,7 @@ const MenuPage = () => {
       <TopBar toggleCart={toggleCart} cartCount={calculateTotalCount()} />
       <Navbar setActiveTab={setActiveTab} activeTab={activeTab} />
 
-      <div className="menu-and-cart">
+      <div className="menu-and-cart menu-container">
         <div className="menu-section">
           {filteredMenus.length > 0 ? (
             filteredMenus.map((menu) => (

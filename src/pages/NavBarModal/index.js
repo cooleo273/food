@@ -3,7 +3,7 @@ import './index.css'; // Import your CSS file for styling
 
 const Navbar = ({ activeTab, setActiveTab }) => {
   return (
-    <div className="navbar">
+    <div className="navbar navtabs">
       <div className="tabs">
         {["breakfast", "lunch", "dessert", "drinks"].map((category) => (
           <button
