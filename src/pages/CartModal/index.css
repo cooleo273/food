@@ -18,11 +18,19 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     overflow: hidden;
   }
-  
+  .increase-decrease-button{
+    background-color: white !important;
+    color: black !important;
+    font-size: 33px !important;
+    margin-left: 2rem !important;
+  }
+  .increase-decrease-button.minus{
+    margin-left: 0rem !important;
+  }
   .cart-modal-header {
     display: flex;
-    gap: 64%;
-    padding: 10px 70px;
+    gap: 69%;
+    padding: 11px 40px;
     background: #f0f0f0; /* Lighter header */
     border-bottom: 2px solid #e0e0e0; /* Thicker border */
   }
@@ -136,7 +144,7 @@
     font-size: 14px;
   }
   .cart-modal-body p{
-    margin-left: 3.5rem;
+    margin-left: 3.5rem !important;
   }
   
   .checkout-button {

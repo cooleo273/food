@@ -8,6 +8,7 @@ const CartModal = ({
   initiatePayment,
   placeOrder,
   onRemoveFromCart,
+  updateCartItemQuantity, // New prop for updating quantity
 }) => {
   const [customerName, setCustomerName] = React.useState("");
   const [phoneNumber, setPhoneNumber] = React.useState("");
@@ -19,7 +20,7 @@ const CartModal = ({
 
     if (customerName && phoneNumber && cartItems.length > 0) {
       try {
-        const totalPrice = cartItems.reduce((sum, item) => sum + item.price, 0);
+        const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
         const cafeName = cartItems[0].cafeName;
         const itemOrdered = cartItems.map((item) => item.name).join(", ");
 
@@ -61,6 +62,10 @@ const CartModal = ({
     }
   };
 
+  const handleQuantityChange = (item, increment) => {
+    updateCartItemQuantity(item, increment);
+  };
+
   return (
     <div className="cart-modal-overlay">
       <div className="cart-modal">
@@ -83,13 +88,18 @@ const CartModal = ({
                       alt={item.name}
                       className="cart-item-img"
                     />
-
+                    <button className="increase-decrease-button" onClick={() => handleQuantityChange(item, 1)}>+</button>
                     <span>
+                      
                       {item.quantity}{" "}
                       {item.quantity > 1 ? item.name + "s" : item.name}
+                      
                     </span>
-                    {/* Show quantity */}
                     <span>{(item.price * item.quantity).toFixed(2)} ETB</span>
+                  </div>
+                  <div>
+                  
+                  <button className="increase-decrease-button minus" onClick={() => handleQuantityChange(item, -1)} disabled={item.quantity <= 1}>-</button>
                   </div>
                   <button
                     className="remove-button"

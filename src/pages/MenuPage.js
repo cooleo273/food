@@ -15,7 +15,7 @@ const MenuPage = () => {
     const storedCart = localStorage.getItem("cart");
     return storedCart ? JSON.parse(storedCart) : [];
   });
-  const [orderDetails, setOrderDetails] = useState(null); 
+  const [orderDetails, setOrderDetails] = useState(null);
   const [notificationOpen, setNotificationOpen] = useState(false); // State for notification
   const [notificationMessage, setNotificationMessage] = useState(""); // State for notification message
 
@@ -27,7 +27,7 @@ const MenuPage = () => {
     const existingItemIndex = cart.findIndex(
       (cartItem) => cartItem._id === item._id && cartItem.cafeName === cafe
     );
-  
+
     if (existingItemIndex === -1) {
       const newItem = { 
         ...item, 
@@ -48,7 +48,6 @@ const MenuPage = () => {
       setNotificationOpen(true);
     }
   };
-  
 
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart"));
@@ -72,6 +71,16 @@ const MenuPage = () => {
 
   const toggleCart = () => {
     setIsCartVisible(!isCartVisible);
+  };
+
+  const updateCartItemQuantity = (item, increment) => {
+    setCart((prevCart) =>
+      prevCart.map((cartItem) =>
+        cartItem._id === item._id
+          ? { ...cartItem, quantity: Math.max(cartItem.quantity + increment, 1) } // Ensure quantity is at least 1
+          : cartItem
+      )
+    );
   };
 
   const handleRemoveFromCart = (itemToRemove) => {
@@ -120,7 +129,6 @@ const MenuPage = () => {
       throw error;
     }
   };
-  
 
   const placeOrder = async (name, phone) => {
     try {
@@ -132,7 +140,6 @@ const MenuPage = () => {
         tx_ref: `CAF-${Date.now()}`,
         paymentStatus: "pending",
         delivered: false,
-
       });
 
       if (response.data) {
@@ -206,6 +213,7 @@ const MenuPage = () => {
               initiatePayment={initiatePayment}
               placeOrder={placeOrder}
               onRemoveFromCart={handleRemoveFromCart}
+              updateCartItemQuantity={updateCartItemQuantity} // Pass the function to CartModal
             />
           </div>
         )}
