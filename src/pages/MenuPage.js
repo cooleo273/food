@@ -25,7 +25,7 @@ const MenuPage = () => {
 
     // Fetch menus
     axios
-      .get("http://localhost:5000/api/menu")
+      .get("https://food-server-seven.vercel.app/api/menu")
       .then((response) => {
         setMenus(response.data);
       })
@@ -55,12 +55,12 @@ const MenuPage = () => {
     const orderedItems = cart.map((item) => item.name).join(", ");
 
     try {
-      const response = await axios.post("http://localhost:5000/api/payment/pay", {
+      const response = await axios.post("https://food-server-seven.vercel.app/api/payment/pay", {
         amount: totalAmount,
         currency: "ETB",
         first_name: name,
         tx_ref: txRef,
-        callback_url: `http://localhost:5000/api/payment/verify?tx_ref=${txRef}`,
+        callback_url: `https://food-server-seven.vercel.app/api/payment/verify?tx_ref=${txRef}`,
         returnUrl: "http://localhost:3000",
         customization: {
           title: title,
@@ -84,7 +84,7 @@ const MenuPage = () => {
 
   const placeOrder = async (name, phone, items, txRef) => {
     try {
-      await axios.post("http://localhost:5000/api/orders", {
+      await axios.post("https://food-server-seven.vercel.app/api/orders", {
         customerName: name,
         phoneNumber: phone,
         itemsOrdered: items.map((item) => item.name),
@@ -117,7 +117,7 @@ const MenuPage = () => {
         ...item, 
         cafeName: cafe, 
         quantity: 1, 
-        image: `http://localhost:5000/${item.photo}`
+        image: `https://food-server-seven.vercel.app/${item.photo}`
       };
       setCart((prevCart) => [...prevCart, newItem]);
     } else {
@@ -142,7 +142,7 @@ const MenuPage = () => {
                   {menu.items.map((item) => (
                     <li key={item._id} className="menu-item">
                       <img
-                        src={`http://localhost:5000/${item.photo}` || img}
+                        src={item.photo || img}
                         alt={item.name}
                         className="menu-item-img"
                       />

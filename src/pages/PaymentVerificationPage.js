@@ -15,7 +15,7 @@ const CallbackPage = () => {
     console.log('Callback parameters:', { txRef, status });
 
     if (txRef && status) {
-      axios.post('http://localhost:5000/api/callback', { tx_ref: txRef, status })
+      axios.post('https://food-server-seven.vercel.app/api/callback', { tx_ref: txRef, status })
         .then(response => {
           setStatus('Payment processed successfully!');
         })

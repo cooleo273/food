@@ -12,7 +12,7 @@ const AdminUpdatePage = () => {
 
   const fetchMenus = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/menu");
+      const response = await axios.get("https://food-server-seven.vercel.app/api/menu");
       setMenus(response.data);
     } catch (error) {
       console.error("Error fetching menus:", error);
@@ -46,7 +46,7 @@ const AdminUpdatePage = () => {
 
     try {
       await axios.put(
-        `http://localhost:5000/api/menu/${selectedMenuId}/${selectedItemId}`,
+        `https://food-server-seven.vercel.app/api/menu/${selectedMenuId}/${selectedItemId}`,
         {
           name: itemName,
           price: itemPrice,
@@ -68,7 +68,7 @@ const AdminUpdatePage = () => {
     if (window.confirm("Are you sure you want to delete this menu item?")) {
       try {
         await axios.delete(
-          `http://localhost:5000/api/menu/${menuId}/${itemId}`
+          `https://food-server-seven.vercel.app/api/menu/${menuId}/${itemId}`
         );
         alert("Item deleted successfully");
         fetchMenus();

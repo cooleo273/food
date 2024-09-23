@@ -2,7 +2,7 @@
 /* General Styles */
 body {
   font-family: 'Montserrat', sans-serif;
-  background-color: #f4f4f9;
+  
   margin: 0;
   font-weight: 500;
   padding: 0;
@@ -64,7 +64,7 @@ body {
   color: white; /* Text color */
   border: none;
   border-radius: 5px;
-  padding: 0.5rem 1rem;
+  padding: 0.7rem 1.2rem;
   font-size: 1rem;
   cursor: pointer;
   position: relative;
@@ -296,7 +296,7 @@ body {
 .admin-menu-button {
   padding: 10px;
   font-size: 13px;
-  background-color: #28a745; /* Changed to a different color for variety */
+  background-color: #4CAF50; /* Changed to a different color for variety */
   color: white;
   border: none;
   border-radius: 4px;
@@ -511,7 +511,7 @@ Copy code
 .tabs {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  margin: 2rem;
 }
 
 .tab-button {
@@ -563,7 +563,7 @@ Copy code
 .cart-section h2 {
   font-size: 1.6rem;
   color: #333;
- 
+  margin: 0.5rem;
   padding-bottom: 10px;
   margin-left: 0rem;
 }
@@ -850,18 +850,19 @@ Copy code
   font-size: 0.9rem
 }
 .logout-button {
-  background-color: #d9534f;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-left: 20px;
+  background-color: white;
+    /* color: white; */
+    padding: 5px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    gap: 8px;
+    margin-left: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.logout-button:hover {
-  background-color: #c9302c;
-}
 
 .admin-actions {
   display: flex;
@@ -884,8 +885,12 @@ Copy code
   cursor: pointer;
   border: none;
   border-radius: 5px;
-  transition: background-color 0.3s, color 0.3s;
+ background-color: white;
   margin: 0rem 3rem;
+}
+.tabs button:hover{
+   background-color: #4CAF50;
+  color: white; 
 }
 
 
@@ -908,15 +913,15 @@ Copy code
 }
 
 .order-card p {
-  margin: 5px 0;
+  margin: 15px 0;
 }
 
 /* Buttons inside the order card */
-.mark-being-made-button, .mark-delivered-button {
-  background-color: #007bff;
+.mark-being-made-button, .mark-delivered-button, .mark-out-for-delivery-button, .mark-ready-for-pickup-button {
+  background-color: #e6a139;
   color: white;
   border: none;
-  padding: 10px 15px;
+  padding: 7px 7px;
   margin-right: 10px;
   cursor: pointer;
   font-size: 14px;
@@ -924,20 +929,42 @@ Copy code
   transition: background-color 0.3s, transform 0.3s;
 }
 
-.mark-being-made-button:hover, .mark-delivered-button:hover {
-  background-color: #0056b3;
+.mark-cancelled-button, .delete-order-button{
+  background-color: #e63939;
+  color: white;
+  border: none;
+  padding: 7px 7px;
+  margin-right: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+  transition: background-color 0.3s, transform 0.3s;
+}
+.buttons{
+  display: flex;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+.buttons button{
+  margin-top: 1rem;
+}
+.order-container{
+  gap: 3rem;
+    /* WIDTH: 26REM; */
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    /* flex-wrap: NOWRAP; */
+    justify-content: center;
+    align-content: center;
 }
 
-.mark-being-made-button:active, .mark-delivered-button:active {
-  transform: scale(0.98);
-}
 
 /* Logout and Add Menu buttons */
 
-
-.logout-button:hover{
-  background-color: #d32f2f;
+.logout-icon{
+  width: 19px;
 }
+
 /* Full Screen Cart Styles */
 .full-screen-cart {
   position: fixed;
