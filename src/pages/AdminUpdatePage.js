@@ -102,7 +102,7 @@ const AdminUpdatePage = () => {
             ?.items.map((item) => (
               <div key={item._id} className="item">
                 <span>
-                  {item.name} - ${item.price.toFixed(2)}
+                  {item.name} - {item.price.toFixed(2)} ETB
                 </span>
                 <div className="button">
                   <button
