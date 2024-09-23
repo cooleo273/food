@@ -5,6 +5,7 @@ import TopBar from "./TopBar";
 import img from "../assets/allen-rad-OCHMcVOWRAU-unsplash.jpg";
 import CartModal from "./CartModal";
 import Navbar from "./NavBarModal/index";
+import { Snackbar, Alert } from "@mui/material"; // Import Snackbar and Alert
 
 const MenuPage = () => {
   const [menus, setMenus] = useState([]);
@@ -14,10 +15,9 @@ const MenuPage = () => {
     const storedCart = localStorage.getItem("cart");
     return storedCart ? JSON.parse(storedCart) : [];
   });
-
-
-  
-  const [orderDetails, setOrderDetails] = useState(null); // State for order details
+  const [orderDetails, setOrderDetails] = useState(null); 
+  const [notificationOpen, setNotificationOpen] = useState(false); // State for notification
+  const [notificationMessage, setNotificationMessage] = useState(""); // State for notification message
 
   const calculateTotalCount = () => {
     return cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -27,7 +27,7 @@ const MenuPage = () => {
     const existingItemIndex = cart.findIndex(
       (cartItem) => cartItem._id === item._id && cartItem.cafeName === cafe
     );
-
+  
     if (existingItemIndex === -1) {
       const newItem = { 
         ...item, 
@@ -36,12 +36,19 @@ const MenuPage = () => {
         image: item.photo
       };
       setCart((prevCart) => [...prevCart, newItem]);
+      setNotificationMessage(`${item.name} added to cart!`); // Set notification message
+      setNotificationOpen(true); // Open notification
     } else {
       const updatedCart = [...cart];
-      updatedCart[existingItemIndex].quantity += 1; // Increment quantity
+      updatedCart[existingItemIndex].quantity += 1; 
       setCart(updatedCart);
+      
+      // Show notification for quantity increase
+      setNotificationMessage(`${item.name} added in cart!`);
+      setNotificationOpen(true);
     }
   };
+  
 
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart"));
@@ -71,16 +78,15 @@ const MenuPage = () => {
     const updatedCart = cart.map((item) => {
       if (item._id === itemToRemove._id) {
         if (item.quantity > 1) {
-          return { ...item, quantity: item.quantity - 1 }; // Decrease quantity
+          return { ...item, quantity: item.quantity - 1 }; 
         }
-        return null; // Mark for removal if quantity is 1
+        return null; 
       }
       return item;
-    }).filter((item) => item !== null); // Filter out marked items
+    }).filter((item) => item !== null); 
   
     setCart(updatedCart);
   };
-  
 
   const initiatePayment = async (name, phone, totalAmount, cafeName) => {
     const txRef = `CAF-${Date.now()}`;
@@ -104,7 +110,6 @@ const MenuPage = () => {
         itemOrdered: orderedItems,
       });
       
-
       if (response.data && response.data.payment_url) {
         return { payment_url: response.data.payment_url, txRef };
       } else {
@@ -129,9 +134,9 @@ const MenuPage = () => {
       });
 
       if (response.data) {
-        setOrderDetails(response.data.order); // Set the order details to state
+        setOrderDetails(response.data.order); 
         alert(`Your order has been placed!`);
-        setCart([]); // Clear the cart after placing the order
+        setCart([]); 
       }
     } catch (error) {
       console.error("There was an error placing the order!", error);
@@ -145,7 +150,10 @@ const MenuPage = () => {
     }))
     .filter((menu) => menu.items.length > 0);
 
- 
+  // Notification close handler
+  const handleCloseNotification = () => {
+    setNotificationOpen(false);
+  };
 
   return (
     <div className="container">
@@ -200,7 +208,6 @@ const MenuPage = () => {
           </div>
         )}
 
-        {/* Display order details if available */}
         {orderDetails && (
           <div className="order-confirmation">
             <h3>Order Confirmation</h3>
@@ -215,6 +222,13 @@ const MenuPage = () => {
           </div>
         )}
       </div>
+
+      {/* Notification Snackbar */}
+      <Snackbar open={notificationOpen} autoHideDuration={3000} onClose={handleCloseNotification}>
+        <Alert onClose={handleCloseNotification} severity="success" sx={{ width: '100%' }}>
+          {notificationMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
