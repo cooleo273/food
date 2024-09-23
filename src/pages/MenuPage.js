@@ -84,7 +84,7 @@ const MenuPage = () => {
 
   const placeOrder = async (name, phone, items, txRef) => {
     try {
-      const response = await axios.post("https://food-server-seven.vercel.app/api/orders", {
+      await axios.post("https://food-server-seven.vercel.app/api/orders", {
         customerName: name,
         phoneNumber: phone,
         itemsOrdered: items.map((item) => item.name),
@@ -93,7 +93,7 @@ const MenuPage = () => {
         paymentStatus: "pending",
         delivered: false,
       });
-
+  
       // Set order details and status
       setOrderDetails({
         customerName: name,
@@ -110,6 +110,7 @@ const MenuPage = () => {
       setOrderStatus("Error placing order. Please try again.");
     }
   };
+  
 
   const filteredMenus = menus
     .map((menu) => ({
