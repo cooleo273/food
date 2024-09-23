@@ -14,8 +14,7 @@ const MenuPage = () => {
     const storedCart = localStorage.getItem("cart");
     return storedCart ? JSON.parse(storedCart) : [];
   });
-  const [orderDetails, setOrderDetails] = useState(null);
-  const [orderStatus, setOrderStatus] = useState('');
+  const [orderDetails, setOrderDetails] = useState(null); // State for order details
 
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart"));
@@ -46,7 +45,7 @@ const MenuPage = () => {
     setCart(updatedCart);
   };
 
-  const initiatePayment = async (name, phone, totalAmount, cafeName, itemOrdered) => {
+  const initiatePayment = async (name, phone, totalAmount, cafeName) => {
     const txRef = `CAF-${Date.now()}`;
     const title = `Order ${cart.length}`.slice(0, 16);
     const orderedItems = cart.map((item) => item.name).join(", ");
@@ -58,7 +57,7 @@ const MenuPage = () => {
         first_name: name,
         tx_ref: txRef,
         callback_url: `https://food-server-seven.vercel.app/api/payment/verify?tx_ref=${txRef}`,
-        returnUrl: "https://savoraddis.netlify.app",
+        returnUrl: "http://localhost:3000",
         customization: {
           title: title,
           description: `Payment for ${cart.length} items`,
@@ -79,30 +78,25 @@ const MenuPage = () => {
     }
   };
 
-  const placeOrder = async (name, phone, items, txRef) => {
+  const placeOrder = async (name, phone) => {
     try {
-      await axios.post("https://food-server-seven.vercel.app/api/orders", {
+      const response = await axios.post("https://food-server-seven.vercel.app/api/orders", {
         customerName: name,
         phoneNumber: phone,
-        itemsOrdered: items.map((item) => item.name),
-        cafeNames: items.map((item) => item.cafeName),
-        tx_ref: txRef,
+        itemsOrdered: cart.map((item) => item.name),
+        cafeNames: cart.map((item) => item.cafeName),
+        tx_ref: `CAF-${Date.now()}`,
         paymentStatus: "pending",
         delivered: false,
       });
 
-      setOrderDetails({
-        customerName: name,
-        phoneNumber: phone,
-        itemsOrdered: items.map(item => item.name),
-        cafeNames: items.map(item => item.cafeName),
-        tx_ref: txRef,
-      });
-      setOrderStatus("Order placed successfully!");
-      setCart([]); // Clear the cart after placing the order
+      if (response.data) {
+        setOrderDetails(response.data.order); // Set the order details to state
+        alert(`Your order has been placed!`);
+        setCart([]); // Clear the cart after placing the order
+      }
     } catch (error) {
       console.error("There was an error placing the order!", error);
-      setOrderStatus("Error placing order. Please try again.");
     }
   };
 
@@ -172,6 +166,7 @@ const MenuPage = () => {
             <p>No menu items available</p>
           )}
         </div>
+
         {isCartVisible && (
           <div className="cart-section">
             <CartModal
@@ -184,19 +179,22 @@ const MenuPage = () => {
             />
           </div>
         )}
-      </div>
 
-      {orderStatus && <h3>{orderStatus}</h3>}
-      {orderDetails && (
-        <div className="order-summary">
-          <h4>Order Summary</h4>
-          <p>Customer Name: {orderDetails.customerName}</p>
-          <p>Phone Number: {orderDetails.phoneNumber}</p>
-          <p>Items Ordered: {orderDetails.itemsOrdered.join(', ')}</p>
-          <p>Cafes: {orderDetails.cafeNames.join(', ')}</p>
-          <p>Transaction Reference: {orderDetails.tx_ref}</p>
-        </div>
-      )}
+        {/* Display order details if available */}
+        {orderDetails && (
+          <div className="order-confirmation">
+            <h3>Order Confirmation</h3>
+            <p>Order ID: {orderDetails._id}</p>
+            <p>Items Ordered:</p>
+            <ul>
+              {orderDetails.itemsOrdered.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+            <p>Status: {orderDetails.orderStatus}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
