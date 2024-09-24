@@ -29,7 +29,7 @@
   }
   .cart-modal-header {
     display: flex;
-    gap: 69%;
+    justify-content: space-between;
     padding: 11px 40px;
     background: #f0f0f0; /* Lighter header */
     border-bottom: 2px solid #e0e0e0; /* Thicker border */
@@ -145,6 +145,19 @@
   }
   .cart-modal-body p{
     margin-left: 3.5rem !important;
+  }
+  .quantity-control button{
+    background-color: #45a049 !important;
+    padding: 0rem;
+  }
+  .quantity-control{
+    background-color: #45a049;
+    color: white;
+    border-radius: 1rem;
+    width: 5.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
   }
   
   .checkout-button {

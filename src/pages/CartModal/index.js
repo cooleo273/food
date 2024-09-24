@@ -1,4 +1,6 @@
 import React from "react";
+import { IconButton } from "@mui/material";
+import { Add, Remove } from "@mui/icons-material";
 import "./index.css"; // Import your CSS file for styling
 
 const CartModal = ({
@@ -8,7 +10,7 @@ const CartModal = ({
   initiatePayment,
   placeOrder,
   onRemoveFromCart,
-  updateCartItemQuantity, // New prop for updating quantity
+  updateCartItemQuantity,
 }) => {
   const [customerName, setCustomerName] = React.useState("");
   const [phoneNumber, setPhoneNumber] = React.useState("");
@@ -88,19 +90,29 @@ const CartModal = ({
                       alt={item.name}
                       className="cart-item-img"
                     />
-                    <button className="increase-decrease-button" onClick={() => handleQuantityChange(item, 1)}>+</button>
+                    
                     <span>
-                      
-                      {item.quantity}{" "}
-                      {item.quantity > 1 ? item.name + "s" : item.name}
-                      
-                    </span>
+                        
+                        {item.name}
+                      </span>
                     <span>{(item.price * item.quantity).toFixed(2)} ETB</span>
                   </div>
-                  <div>
-                  
-                  <button className="increase-decrease-button minus" onClick={() => handleQuantityChange(item, -1)} disabled={item.quantity <= 1}>-</button>
-                  </div>
+                  <div className="quantity-control">
+                      <IconButton
+                        aria-label="increase quantity"
+                        onClick={() => handleQuantityChange(item, 1)}
+                      >
+                        <Add />
+                      </IconButton>
+                      {item.quantity}{" "}
+                      <IconButton
+                        aria-label="decrease quantity"
+                        onClick={() => handleQuantityChange(item, -1)}
+                        disabled={item.quantity <= 1}
+                      >
+                        <Remove />
+                      </IconButton>
+                    </div>
                   <button
                     className="remove-button"
                     onClick={() => onRemoveFromCart(item)}
