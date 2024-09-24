@@ -9,7 +9,7 @@ const AdminUpdatePage = () => {
   const [itemName, setItemName] = useState("");
   const [itemPrice, setItemPrice] = useState("");
   const [itemDescription, setItemDescription] = useState(""); // New state for description
-
+  const [itemCategory, setItemCategory] = useState("");
   const fetchMenus = async () => {
     try {
       const response = await axios.get("https://food-server-seven.vercel.app/api/menu");
@@ -28,18 +28,20 @@ const AdminUpdatePage = () => {
     setSelectedItemId("");
     setItemName("");
     setItemPrice("");
-    setItemDescription(""); // Reset description when menu changes
+    setItemDescription(""); 
+    setItemCategory("")// Reset description when menu changes
   };
 
-  const handleItemSelect = (itemId, name, price, description) => {
+  const handleItemSelect = (itemId, name, price, description, category) => {
     setSelectedItemId(itemId);
     setItemName(name);
     setItemPrice(price);
-    setItemDescription(description); // Set the selected item's description
+    setItemDescription(description);
+    setItemCategory(category) // Set the selected item's description
   };
 
   const handleUpdateItem = async () => {
-    if (!selectedItemId || !itemName || !itemPrice || !itemDescription) {
+    if (!selectedItemId || !itemName || !itemPrice || !itemDescription || !itemCategory) {
       alert("Please fill in all fields and select an item");
       return;
     }
@@ -50,13 +52,15 @@ const AdminUpdatePage = () => {
         {
           name: itemName,
           price: itemPrice,
-          description: itemDescription, // Include description in the update request
+          description: itemDescription,
+          category: itemCategory, // Include description in the update request
         }
       );
       alert("Item updated successfully!");
       setItemName("");
       setItemPrice("");
-      setItemDescription(""); // Clear the form after updating
+      setItemDescription("");
+      setItemCategory("") // Clear the form after updating
       fetchMenus();
     } catch (error) {
       console.error("Error updating item:", error);
@@ -107,7 +111,7 @@ const AdminUpdatePage = () => {
                 <div className="button">
                   <button
                     onClick={() =>
-                      handleItemSelect(item._id, item.name, item.price, item.description)
+                      handleItemSelect(item._id, item.name, item.price, item.description, item.category)
                     }
                   >
                     Update
@@ -124,34 +128,46 @@ const AdminUpdatePage = () => {
         </div>
       )}
 
-      {selectedItemId && (
-        <div className="item-update-form">
-          <h2>Update Item</h2>
-          <input
-            type="text"
-            placeholder="Item Name"
-            value={itemName}
-            onChange={(e) => setItemName(e.target.value)}
-            className="admin-update-input"
-          />
-          <input
-            type="number"
-            placeholder="Item Price"
-            value={itemPrice}
-            onChange={(e) => setItemPrice(e.target.value)}
-            className="admin-update-input"
-          />
-          <textarea
-            placeholder="Item Description" // Input for description
-            value={itemDescription}
-            onChange={(e) => setItemDescription(e.target.value)}
-            className="admin-update-input"
-          />
-          <button onClick={handleUpdateItem} className="admin-update-button">
-            Update Item
-          </button>
-        </div>
-      )}
+{selectedItemId && (
+  <div className="item-update-form">
+    <h2>Update Item</h2>
+    <input
+      type="text"
+      placeholder="Item Name"
+      value={itemName}
+      onChange={(e) => setItemName(e.target.value)}
+      className="admin-update-input"
+    />
+    <input
+      type="number"
+      placeholder="Item Price"
+      value={itemPrice}
+      onChange={(e) => setItemPrice(e.target.value)}
+      className="admin-update-input"
+    />
+    <textarea
+      placeholder="Item Description"
+      value={itemDescription}
+      onChange={(e) => setItemDescription(e.target.value)}
+      className="admin-menu-input"
+    />
+    <select
+      value={itemCategory}
+      onChange={(e) => setItemCategory(e.target.value)} // Add a category selection
+      className="select-dropdown"
+    >
+      <option value="">Select Category</option>
+      <option value="breakfast">Breakfast</option>
+      <option value="lunch">Lunch</option>
+      <option value="dessert">Dessert</option>
+      <option value="drinks">Drinks</option>
+    </select>
+    <button onClick={handleUpdateItem} className="admin-update-button">
+      Update Item
+    </button>
+  </div>
+)}
+
     </div>
   );
 };
