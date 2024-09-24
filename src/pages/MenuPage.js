@@ -5,7 +5,7 @@ import TopBar from "./TopBar";
 import img from "../assets/allen-rad-OCHMcVOWRAU-unsplash.jpg";
 import CartModal from "./CartModal";
 import Navbar from "./NavBarModal/index";
-import { Snackbar, Alert } from "@mui/material"; // Import Snackbar and Alert
+import { Snackbar, Alert, CircularProgress } from "@mui/material"; // Import Snackbar, Alert, and CircularProgress
 
 const MenuPage = () => {
   const [menus, setMenus] = useState([]);
@@ -16,8 +16,9 @@ const MenuPage = () => {
     return storedCart ? JSON.parse(storedCart) : [];
   });
   const [orderDetails, setOrderDetails] = useState(null);
-  const [notificationOpen, setNotificationOpen] = useState(false); // State for notification
-  const [notificationMessage, setNotificationMessage] = useState(""); // State for notification message
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const [loading, setLoading] = useState(true); // Loading state
 
   const calculateTotalCount = () => {
     return cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -36,14 +37,12 @@ const MenuPage = () => {
         image: item.photo
       };
       setCart((prevCart) => [...prevCart, newItem]);
-      setNotificationMessage(`${item.name} added to cart!`); // Set notification message
-      setNotificationOpen(true); // Open notification
+      setNotificationMessage(`${item.name} added to cart!`);
+      setNotificationOpen(true);
     } else {
       const updatedCart = [...cart];
       updatedCart[existingItemIndex].quantity += 1; 
       setCart(updatedCart);
-      
-      // Show notification for quantity increase
       setNotificationMessage(`${item.name} added in cart!`);
       setNotificationOpen(true);
     }
@@ -55,13 +54,16 @@ const MenuPage = () => {
       setCart(storedCart);
     }
 
+    // Fetch menus with loading and error handling
     axios
       .get("https://food-server-seven.vercel.app/api/menu")
       .then((response) => {
         setMenus(response.data);
+        setLoading(false); // Stop loading once data is fetched
       })
       .catch((error) => {
         console.error("There was an error fetching the menus!", error);
+        setLoading(false); // Stop loading if there's an error
       });
   }, []);
 
@@ -77,7 +79,7 @@ const MenuPage = () => {
     setCart((prevCart) =>
       prevCart.map((cartItem) =>
         cartItem._id === item._id
-          ? { ...cartItem, quantity: Math.max(cartItem.quantity + increment, 1) } // Ensure quantity is at least 1
+          ? { ...cartItem, quantity: Math.max(cartItem.quantity + increment, 1) }
           : cartItem
       )
     );
@@ -89,7 +91,7 @@ const MenuPage = () => {
         if (item.quantity > 1) {
           return { ...item, quantity: item.quantity - 1 }; 
         }
-        return null; 
+        return null;
       }
       return item;
     }).filter((item) => item !== null); 
@@ -108,7 +110,7 @@ const MenuPage = () => {
         currency: "ETB",
         first_name: name,
         tx_ref: txRef,
-        callback_url: `https://food-server-seven.vercel.app/api/payment/verify?tx_ref=${txRef}`, // Only use callback URL for verification
+        callback_url: `https://food-server-seven.vercel.app/api/payment/verify?tx_ref=${txRef}`,
         returnUrl: "https://savoraddis.netlify.app",
         customization: {
           title: title,
@@ -159,7 +161,6 @@ const MenuPage = () => {
     }))
     .filter((menu) => menu.items.length > 0);
 
-  // Notification close handler
   const handleCloseNotification = () => {
     setNotificationOpen(false);
   };
@@ -171,7 +172,12 @@ const MenuPage = () => {
 
       <div className="menu-and-cart menu-container">
         <div className="menu-section">
-          {filteredMenus.length > 0 ? (
+          {loading ? (
+            <div className="loading-container">
+              <CircularProgress />
+              <p>Loading menus, please wait...</p>
+            </div>
+          ) : filteredMenus.length > 0 ? (
             filteredMenus.map((menu) => (
               <div key={menu.cafe}>
                 <h2>{menu.cafe}</h2>
@@ -213,7 +219,7 @@ const MenuPage = () => {
               initiatePayment={initiatePayment}
               placeOrder={placeOrder}
               onRemoveFromCart={handleRemoveFromCart}
-              updateCartItemQuantity={updateCartItemQuantity} // Pass the function to CartModal
+              updateCartItemQuantity={updateCartItemQuantity}
             />
           </div>
         )}
