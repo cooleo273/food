@@ -206,7 +206,7 @@ const MenuPage = () => {
               </div>
             ))
           ) : (
-            <p>No menu items available</p>
+            <img src={img} alt="no-menu"></img>
           )}
         </div>
 

@@ -553,6 +553,11 @@ Copy code
 .menu-section {
   flex: 1; /* This makes the menu section take available space */
 }
+.menu-section img{
+  width: 28rem;
+  height: 20rem;
+  object-fit: cover;
+}
 
   .cart-section {
     width: 355px; /* Set a fixed width for the cart */
@@ -957,6 +962,7 @@ Copy code
     /* flex-wrap: NOWRAP; */
     justify-content: center;
     align-content: center;
+    margin-top: 2rem;
 }
 
 
