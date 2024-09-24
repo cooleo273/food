@@ -1017,7 +1017,7 @@ Copy code
  }
 }
 
-@media (max-width: 1400px){
+@media (min-width: 1400px){
   .top-bar{
     gap: 50%;
   }
@@ -1046,6 +1046,9 @@ Copy code
   .admin-menu-button {
     font-size: 14px;
     padding: 10px;
+  }
+  p{
+    font-size: 12px;
   }
   .admin-update-header{
     font-size: 18px;
