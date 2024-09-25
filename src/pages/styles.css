@@ -555,8 +555,25 @@ Copy code
 }
 .menu-section img{
   width: 28rem;
-  height: 20rem;
+  height: 13rem;
   object-fit: cover;
+}
+.loading-container {
+  display: flex;
+  justify-content: center;  /* Centers horizontally */
+  align-items: center;  /* Centers vertically */
+  height: 60vh;  /* Takes full viewport height */
+  flex-direction: column; /* Ensures the spinner and text are stacked */
+}
+
+.loading-container p {
+  margin-top: 10px;
+  font-size: 18px;
+  color: #666;
+}
+.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiAlert-root.MuiAlert-colorError.MuiAlert-standardError.MuiAlert-standard.css-1gl6y88-MuiPaper-root-MuiAlert-root{
+  display: flex;
+  justify-content: center;
 }
 
   .cart-section {

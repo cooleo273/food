@@ -86,18 +86,10 @@ const MenuPage = () => {
   };
 
   const handleRemoveFromCart = (itemToRemove) => {
-    const updatedCart = cart.map((item) => {
-      if (item._id === itemToRemove._id) {
-        if (item.quantity > 1) {
-          return { ...item, quantity: item.quantity - 1 }; 
-        }
-        return null;
-      }
-      return item;
-    }).filter((item) => item !== null); 
-  
+    const updatedCart = cart.filter((item) => item._id !== itemToRemove._id);
     setCart(updatedCart);
   };
+  
 
   const initiatePayment = async (name, phone, totalAmount, cafeName) => {
     const txRef = `CAF-${Date.now()}`;
@@ -206,7 +198,10 @@ const MenuPage = () => {
               </div>
             ))
           ) : (
-            <img src={img} alt="no-menu"></img>
+            <div>
+            
+            <Alert severity="error">Sorry, no menu is available at the moment. Please check back later or try refreshing.</Alert>
+            </div>
           )}
         </div>
 

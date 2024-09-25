@@ -98,20 +98,22 @@ const CartModal = ({
                     <span>{(item.price * item.quantity).toFixed(2)} ETB</span>
                   </div>
                   <div className="quantity-control">
-                      <IconButton
-                        aria-label="increase quantity"
-                        onClick={() => handleQuantityChange(item, 1)}
-                      >
-                        <Add />
-                      </IconButton>
-                      {item.quantity}{" "}
-                      <IconButton
+                  <IconButton
                         aria-label="decrease quantity"
                         onClick={() => handleQuantityChange(item, -1)}
                         disabled={item.quantity <= 1}
                       >
                         <Remove />
                       </IconButton>
+                     {" "} {item.quantity}{" "}
+                      <IconButton
+                        aria-label="increase quantity"
+                        onClick={() => handleQuantityChange(item, 1)}
+                      >
+                        <Add />
+                      </IconButton>
+                      
+                      
                     </div>
                   <button
                     className="remove-button"
