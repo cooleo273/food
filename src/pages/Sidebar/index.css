@@ -1,0 +1,31 @@
+.cafe-sidebar {
+    position: fixed;
+    top: 0;            /* Adjust based on your layout */
+    left: 0;
+    width: 250px;      /* Define a width that fits your layout */
+    height: 100vh;     /* Make the sidebar span the full height of the viewport */
+    overflow-y: auto;  /* Allow the sidebar to scroll independently if its content overflows */
+    background-color: #f8f8f8;  /* Optional: set a background color */
+    z-index: 1; /* Border for separation */
+  }
+  
+  .cafe-sidebar h2 {
+    margin-bottom: 10px;
+  }
+  
+  .cafe-sidebar ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .cafe-sidebar li {
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .cafe-sidebar li:hover {
+    background-color: #4d923a; 
+    color: white;/* Highlight color on hover */
+  }
+  

@@ -1,7 +1,12 @@
-import React from "react";
-import { IconButton } from "@mui/material";
+import React, { useState } from "react";
+import { IconButton, TextField, MenuItem } from "@mui/material";
 import { Add, Remove } from "@mui/icons-material";
-import "./index.css"; // Import your CSS file for styling
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DesktopDatePicker, TimePicker } from '@mui/x-date-pickers';
+import dayjs from 'dayjs';  // Import dayjs
+import 'moment/locale/de';
+import "./index.css";
 
 const CartModal = ({
   isOpen,
@@ -12,8 +17,11 @@ const CartModal = ({
   onRemoveFromCart,
   updateCartItemQuantity,
 }) => {
-  const [customerName, setCustomerName] = React.useState("");
-  const [phoneNumber, setPhoneNumber] = React.useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [deliveryOption, setDeliveryOption] = useState("now");
+  const [deliveryDate, setDeliveryDate] = useState(dayjs());  // Use dayjs for date
+  const [deliveryTime, setDeliveryTime] = useState(dayjs());  // Use dayjs for time
 
   if (!isOpen) return null;
 
@@ -22,16 +30,24 @@ const CartModal = ({
 
     if (customerName && phoneNumber && cartItems.length > 0) {
       try {
-        const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        const totalPrice = cartItems.reduce(
+          (sum, item) => sum + item.price * item.quantity,
+          0
+        );
         const cafeName = cartItems[0].cafeName;
         const itemOrdered = cartItems.map((item) => item.name).join(", ");
+
+        // Combine the selected date and time using dayjs
+        const selectedDeliveryTime =
+          deliveryOption === "now" ? dayjs() : dayjs(deliveryDate).hour(deliveryTime.hour()).minute(deliveryTime.minute());
 
         const paymentResponse = await initiatePayment(
           customerName,
           phoneNumber,
           totalPrice,
           cafeName,
-          itemOrdered
+          itemOrdered,
+          selectedDeliveryTime.toDate()  // Convert dayjs to JS Date object for the backend
         );
 
         if (paymentResponse && paymentResponse.payment_url) {
@@ -41,16 +57,17 @@ const CartModal = ({
           );
           setTimeout(() => {
             if (paymentWindow) {
-              paymentWindow.close(); // Close the payment window after delay
+              paymentWindow.close();
             }
-            window.location.href = "http://savoraddis.netlify.app"; // Redirect to your app
+            window.location.href = "http://savoraddis.netlify.app";
           }, 100000);
 
           await placeOrder(
             customerName,
             phoneNumber,
             cartItems,
-            paymentResponse.txRef
+            paymentResponse.txRef,
+            selectedDeliveryTime.toDate()  // Convert dayjs to JS Date object for the backend
           );
         } else {
           alert("Failed to get payment URL");
@@ -90,31 +107,25 @@ const CartModal = ({
                       alt={item.name}
                       className="cart-item-img"
                     />
-                    
-                    <span>
-                        
-                        {item.name}
-                      </span>
+                    <span>{item.name}</span>
                     <span>{(item.price * item.quantity).toFixed(2)} ETB</span>
                   </div>
                   <div className="quantity-control">
-                  <IconButton
-                        aria-label="decrease quantity"
-                        onClick={() => handleQuantityChange(item, -1)}
-                        disabled={item.quantity <= 1}
-                      >
-                        <Remove />
-                      </IconButton>
-                     {" "} {item.quantity}{" "}
-                      <IconButton
-                        aria-label="increase quantity"
-                        onClick={() => handleQuantityChange(item, 1)}
-                      >
-                        <Add />
-                      </IconButton>
-                      
-                      
-                    </div>
+                    <IconButton
+                      aria-label="decrease quantity"
+                      onClick={() => handleQuantityChange(item, -1)}
+                      disabled={item.quantity <= 1}
+                    >
+                      <Remove />
+                    </IconButton>{" "}
+                    {item.quantity}{" "}
+                    <IconButton
+                      aria-label="increase quantity"
+                      onClick={() => handleQuantityChange(item, 1)}
+                    >
+                      <Add />
+                    </IconButton>
+                  </div>
                   <button
                     className="remove-button"
                     onClick={() => onRemoveFromCart(item)}
@@ -146,6 +157,42 @@ const CartModal = ({
                 onChange={(e) => setPhoneNumber(e.target.value)}
               />
             </div>
+
+            {/* Delivery Option Selection */}
+            <div className="form-group">
+              <label htmlFor="deliveryOption">Delivery Time</label>
+              <TextField
+                select
+                label="Select Delivery Time"
+                value={deliveryOption}
+                onChange={(e) => setDeliveryOption(e.target.value)}
+                fullWidth
+              >
+                <MenuItem value="now">Deliver Now</MenuItem>
+                <MenuItem value="schedule">Schedule for Later</MenuItem>
+              </TextField>
+            </div>
+
+            {/* Date Picker and Time Picker for Scheduled Delivery */}
+            {deliveryOption === "schedule" && (
+              <div className="form-group">
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DesktopDatePicker
+                    label="Select date"
+                    value={deliveryDate}
+                    onChange={(newDate) => setDeliveryDate(newDate)}  // Use dayjs object
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                  <TimePicker
+                    label="Select time"
+                    value={deliveryTime}
+                    onChange={(newTime) => setDeliveryTime(newTime)}  // Use dayjs object
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </LocalizationProvider>
+              </div>
+            )}
+
             <button type="submit" className="checkout-button">
               Proceed to Payment
             </button>
