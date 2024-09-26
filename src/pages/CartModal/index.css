@@ -1,238 +1,175 @@
-.cart-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7); /* Darker overlay */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
+.cart-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  width: 85%; /* Reduced width */
+  max-width: 500px; /* Reduced max-width */
+  max-height: 80vh; /* Limit height to 80% of viewport height */
+  overflow: hidden;
+  z-index: 1000;
+  overflow-y: auto; /* Allow scrolling if content exceeds height */
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Black background with 50% opacity */
+  z-index: 999; /* Ensure it appears below the modal */
+  display: none; /* Initially hidden */
+}
+.total{
+  font-size: 1.2rem;
+}
+
+/* When the modal is open, show the overlay */
+.overlay.active {
+  display: block;
+}
+.cart-item-details h4 {
+  margin: 0;
+  color: #3f51b5; /* Material UI primary color */
+  font-size: 16px; /* Smaller font size for item title */
+}
+
+.cart-item-details p {
+  margin: 5px 0;
+  color: #555; /* Darker grey for text */
+  font-size: 14px; /* Smaller font size for item descriptions */
+}
+
+
+.cart-header {
+  background-color: #3f51b5; /* Material UI primary color */
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 12px 12px 0 0;
+}
+
+.cart-header h2 {
+  margin: 0;
+  color: white;
+}
+
+.cart-header button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.cart-header button:hover {
+  color: #ff4081; /* Material UI accent color */
+}
+
+.cart-items {
+  padding: 15px; /* Slightly reduced padding */
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 8px 0; /* Reduced padding */
+}
+
+.cart-item:last-child {
+  border-bottom: none; /* Remove border for last item */
+}
+
+.cart-item-img {
+  width: 60px; /* Reduced image size */
+  height: 60px; /* Reduced image size */
+  border-radius: 8px;
+  object-fit: cover;
+  margin-right: 10px; /* Reduced margin */
+}
+
+.cart-item-details {
+  flex: 1;
+}
+
+.cart-item-details h4 {
+  margin: 0;
+  color: #3f51b5; /* Material UI primary color */
+}
+
+.cart-item-details p {
+  margin: 3px 0; /* Reduced margin */
+  color: #555; /* Darker grey for text */
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+}
+
+.quantity-control span {
+  margin: 0 8px; /* Reduced margin */
+  font-size: 16px; /* Reduced font size */
+}
+
+.quantity-control button {
+  background: #ff4081; /* Accent color for remove button */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0px 3px; /* Reduced padding */
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.quantity-control button:hover {
+  background: #e91e63; /* Darker accent color on hover */
+}
+
+h3 {
+  padding: 10px 15px; /* Slightly reduced padding */
+  margin: 0;
+  color: #3f51b5; /* Primary color */
+  font-weight: 500;
+}
+
+form {
+  padding: 15px; /* Reduced padding */
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Reduced gap */
+}
+
+form .MuiTextField-root {
+  margin: 0; /* Reset margin for TextField */
+}
+
+button[type="submit"] {
+  background-color: #3f51b5; /* Primary color for submit button */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #303f9f; /* Darker primary color on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
   .cart-modal {
-    background: white;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 600px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-    overflow: hidden;
+    width: 90%; /* Adjust width for small screens */
+    max-width: none; /* Allow full width on small screens */
   }
-  .increase-decrease-button{
-    background-color: white !important;
-    color: black !important;
-    font-size: 33px !important;
-    margin-left: 2rem !important;
-  }
-  .increase-decrease-button.minus{
-    margin-left: 0rem !important;
-  }
-  .cart-modal-header {
-    display: flex;
-    justify-content: space-between;
-    padding: 11px 40px;
-    background: #f0f0f0; /* Lighter header */
-    border-bottom: 2px solid #e0e0e0; /* Thicker border */
-  }
-  
-  .close-button {
-    background: transparent;
-    border: none;
-    font-size: 28px;
-    color: #333; /* Darker close button */
-    cursor: pointer;
-  }
-  
-  .cart-modal-body {
-    padding: 16px;
-    max-height: 250px;
-    overflow-y: auto;
-    border-bottom: 2px solid #e0e0e0; /* Thicker border */
-  }
-  
-  .cart-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 16px; /* More space between items */
-  }
-  
-  .cart-item-image {
-    width: 80px; /* Larger image size */
-    height: 80px;
-    border-radius: 8px; /* More rounded corners */
-    object-fit: cover; /* Maintains aspect ratio */
-    margin-right: 16px; /* More space between image and text */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-  }
-  
-  .cart-item-details {
-    flex-grow: 1; /* Allows details to grow */
-  }
-  
-  .cart-item-details h3 {
-    margin: 0;
-    font-size: 18px; /* Larger item name */
-  }
-  
-  .cart-item-details p {
-    margin: 4px 0 0;
-    color: #555; /* Softer text color */
-  }
-  
- 
-  
-  
-  
-
-  .delete-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-  }
-  
-  .delete-button svg {
-    fill: #ffcbcb; /* Red color */
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-  }
-  
-  .delete-button:hover svg {
-    fill: #ffffff; /* Darker red on hover */
-    cursor: pointer;
-  }
-
-  .image-container img{
-        width: 4rem;
-        height: 4rem;
-        object-fit: cover;
-  }
-  .image-container{
-    display: flex;
-    align-items: center;
-
-  }
-  .image-container span{
-    margin-left: 2rem;
-    
-  }
-  .cart-modal-footer {
-    border-top: 1px solid #eaeaea;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    margin-left: 3.5rem;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  .form-group label {
-    font-weight: bold;
-    font-size: 14px;
-    margin-bottom: 5px;
-    display: block;
-  }
-  
-  .form-group input {
-    width: 50%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  .cart-modal-body p{
-    margin-left: 3.5rem !important;
-  }
-  .quantity-control button{
-    background-color: #45a049 !important;
-    padding: 0rem;
-  }
-  .quantity-control{
-    background-color: #45a049;
-    color: white;
-    border-radius: 1rem;
-    width: 5.5rem;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-  }
-  
-  .checkout-button {
-    background-color: #4caf50;
-    color: white;
-    padding: 10px;  
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-    width: 50%;
-  }
-  p{
-    margin: 0.8rem 0rem !important;
-  }
-  
-  .checkout-button:hover {
-    background-color: #45a049;
-  }
-  
-  /* Media Query for Responsiveness */
-  @media (max-width: 768px) {
-    .cart-modal {
-      width:65%;
-      padding: 15px;
-    }
-    .cart-section h2 {
-        font-size: 1rem;
-        color: #333;
-        /* padding-bottom: 10px; */
-        margin-left: 0rem;
-    }
-    .cart-modal-body{
-        border-bottom: 1px solid #ccc;
-    }
-    .cart-item-img {
-      width: 40px;
-      height: 40px;
-    }
-    .form-group input{
-        width: 90%;
-    }
-    .cart-item-list{
-        padding: 0rem;
-    }
-    .cart-modal-footer{
-        margin: 0rem;
-    }
-    .cart-item{
-        padding: 0rem;
-    }
-    .cart-modal-header{
-        padding: 1rem;
-    }
-    .checkout-button {
-      padding: 8px;
-      font-size: 14px;
-    }
-  }
-
-  @media (max-width: 480px){
-    .cart-modal-body p {
-        margin-left: 0rem;
-    }   
-    .image-container span {
-        margin-left: 0.8rem;
-        font-size: 11px;
-    }
-    .image-container img{
-        width: 2rem;
-        height: 2rem;
-    }
-    .cart-item button{
-        padding: 1px 5px;
-        font-size: 11px;
-    }
-  }
+}

@@ -6,25 +6,49 @@ import img from "../assets/allen-rad-OCHMcVOWRAU-unsplash.jpg";
 import CartModal from "./CartModal";
 import Navbar from "./NavBarModal/index";
 import { Snackbar, Alert, CircularProgress } from "@mui/material"; 
-import CafeSidebar from "./Sidebar"; // Import the CafeSidebar component
+import CafeSidebar from "./Sidebar"; 
 
 const MenuPage = () => {
   const [menus, setMenus] = useState([]);
   const [activeCafe, setActiveCafe] = useState(null);
-  const [activeTab, setActiveTab] = useState("breakfast");  // Default to "breakfast"
+  const [activeTab, setActiveTab] = useState("breakfast");
   const [isCartVisible, setIsCartVisible] = useState(false);
   const [cart, setCart] = useState(() => {
     const storedCart = localStorage.getItem("cart");
     return storedCart ? JSON.parse(storedCart) : [];
   });
-  const [orderDetails, setOrderDetails] = useState(null);
-  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(true);
   const [notificationMessage, setNotificationMessage] = useState("");
-  const [loading, setLoading] = useState(true); 
-  const [isDrawerOpen, setIsDrawerOpen] = useState(true); // Add state to track sidebar
+  const [loading, setLoading] = useState(true);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
 
-  const calculateTotalCount = () => {
-    return cart.reduce((sum, item) => sum + item.quantity, 0);
+  useEffect(() => {
+    const storedCart = JSON.parse(localStorage.getItem("cart"));
+    if (storedCart && Array.isArray(storedCart)) {
+      setCart(storedCart);
+    }
+
+    axios.get("https://food-server-seven.vercel.app/api/menu")
+      .then((response) => {
+        setMenus(response.data);
+        setLoading(false);
+        const defaultCafe = response.data.find((menu) => menu.cafe === "Cambridge");
+        if (defaultCafe) {
+          setActiveCafe(defaultCafe);
+        }
+      })
+      .catch((error) => {
+        console.error("There was an error fetching the menus!", error);
+        setLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
+
+  const toggleCart = () => {
+    setIsCartVisible(!isCartVisible);
   };
 
   const handleAddToCart = (item, cafe) => {
@@ -46,41 +70,64 @@ const MenuPage = () => {
       const updatedCart = [...cart];
       updatedCart[existingItemIndex].quantity += 1; 
       setCart(updatedCart);
-      setNotificationMessage(`${item.name} added in cart!`);
+      setNotificationMessage(`${item.name} quantity updated in cart!`);
       setNotificationOpen(true);
     }
   };
 
-  useEffect(() => {
-    const storedCart = JSON.parse(localStorage.getItem("cart"));
-    if (storedCart && Array.isArray(storedCart)) {
-      setCart(storedCart);
-    }
-
-    axios
-      .get("https://food-server-seven.vercel.app/api/menu")
-      .then((response) => {
-        setMenus(response.data);
-        setLoading(false);
-
-        // Automatically set "Cambridge" as the activeCafe if available
-        const defaultCafe = response.data.find((menu) => menu.cafe === "Cambridge");
-        if (defaultCafe) {
-          setActiveCafe(defaultCafe);  // Set "Cambridge" as the default active cafe
-        }
-      })
-      .catch((error) => {
-        console.error("There was an error fetching the menus!", error);
-        setLoading(false);
+  const initiatePayment = async (name, phone, totalAmount, cafeName, orderDate) => {
+    const txRef = `CAF-${Date.now()}`;
+    const title = `Order ${cart.length}`.slice(0, 16);
+    const orderedItems = cart.map((item) => item.name).join(", ");
+  
+    try {
+      const response = await axios.post("https://food-server-seven.vercel.app/api/payment/pay", {
+        amount: totalAmount,
+        currency: "ETB",
+        first_name: name,
+        tx_ref: txRef,
+        callback_url: `https://food-server-seven.vercel.app/api/payment/verify?tx_ref=${txRef}`,
+        returnUrl: "https://savoraddis.netlify.app",
+        customization: {
+          title: title,
+          description: `Payment for ${cart.length} items`,
+        },
+        phoneNumber: phone,
+        cafeName: cafeName,
+        itemOrdered: orderedItems,
+        orderDate: orderDate  // Format the date if needed
       });
-  }, []);
+  
+      if (response.data && response.data.payment_url) {
+        return { payment_url: response.data.payment_url, txRef };
+      } else {
+        throw new Error("Invalid response format");
+      }
+    } catch (error) {
+      console.error("Payment initialization error:", error.response ? error.response.data : error.message);
+      throw error;
+    }
+  };
+  
+  const placeOrder = async (name, phone) => {
+    try {
+      const response = await axios.post("https://food-server-seven.vercel.app/api/orders", {
+        customerName: name,
+        phoneNumber: phone,
+        itemsOrdered: cart.map((item) => item.name),
+        cafeNames: cart.map((item) => item.cafeName),
+        tx_ref: `CAF-${Date.now()}`,
+        paymentStatus: "pending",
+        delivered: false,
+      });
 
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
-
-  const toggleCart = () => {
-    setIsCartVisible(!isCartVisible);
+      if (response.data) {
+        alert(`Your order has been placed!`);
+        setCart([]); 
+      }
+    } catch (error) {
+      console.error("There was an error placing the order!", error);
+    }
   };
 
   const updateCartItemQuantity = (item, increment) => {
@@ -97,7 +144,7 @@ const MenuPage = () => {
     const updatedCart = cart.map((item) => {
       if (item._id === itemToRemove._id) {
         if (item.quantity > 1) {
-          return { ...item, quantity: item.quantity - 1 }; 
+          return { ...item, quantity: item.quantity - 1 };
         }
         return null;
       }
@@ -113,12 +160,11 @@ const MenuPage = () => {
 
   const handleCafeSelect = (cafe) => {
     setActiveCafe(cafe); 
-    setActiveTab("breakfast"); 
+    setActiveTab("breakfast");
   };
 
-  // Filter menu items based on the active tab
   const filteredMenus = activeCafe 
-    ? activeCafe.items.filter(item => item.category === activeTab)  // Filter by active tab
+    ? activeCafe.items.filter(item => item.category === activeTab)
     : [];
 
   return (
@@ -126,10 +172,10 @@ const MenuPage = () => {
       <CafeSidebar 
         cafes={menus} 
         onCafeSelect={handleCafeSelect}
-        onToggleDrawer={setIsDrawerOpen} // Pass drawer state handler to sidebar
+        onToggleDrawer={setIsDrawerOpen} 
       />
       <div className={`menu-body ${isDrawerOpen ? 'with-sidebar' : 'without-sidebar'}`}>
-        <TopBar toggleCart={toggleCart} cartCount={calculateTotalCount()} />
+        <TopBar toggleCart={toggleCart} cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)} />
         <div className="menu-and-cart menu-container">
           <Navbar setActiveTab={setActiveTab} activeTab={activeTab} />
           <div className="menu-section">
@@ -140,7 +186,6 @@ const MenuPage = () => {
               </div>
             ) : activeCafe && filteredMenus.length > 0 ? (
               <div key={activeCafe.cafe}>
-                
                 <ul className="menu-list">
                   {filteredMenus.map((item) => (
                     <li key={item._id} className="menu-item">
@@ -165,20 +210,20 @@ const MenuPage = () => {
                 </ul>
               </div>
             ) : (
-              <div>
-                <Alert severity="error">Sorry, no menu is available at the moment. Please check back later or try refreshing.</Alert>
-              </div>
+              <Alert severity="error">Sorry, no menu is available at the moment. Please check back later or try refreshing.</Alert>
             )}
           </div>
 
           {isCartVisible && (
             <div className="cart-section">
               <CartModal
-                isOpen={isCartVisible}
+                isOpen={isCartVisible} // Corrected line
                 onClose={toggleCart}
                 cartItems={cart}
+                initiatePayment={initiatePayment}
                 onRemoveFromCart={handleRemoveFromCart}
                 updateCartItemQuantity={updateCartItemQuantity}
+                placeOrder={placeOrder}
               />
             </div>
           )}
@@ -194,4 +239,4 @@ const MenuPage = () => {
   );
 };
 
-export default MenuPage;
+export default MenuPage; 
