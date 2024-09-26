@@ -961,6 +961,7 @@ Copy code
   border: none;
   border-radius: 5px;
  background-color: white;
+ color: black;
   margin: 0rem 2rem;
 }
 .tabs button:hover{

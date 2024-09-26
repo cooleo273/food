@@ -5,7 +5,7 @@ const Navbar = ({ activeTab, setActiveTab }) => {
   return (
     <div className="navbar navtabs">
       <div className="tabs">
-        {["breakfast", "lunch", "dessert", "drinks"].map((category) => (
+        {["breakfast", "main dish", "dessert", "drinks"].map((category) => (
           <button
             key={category}
             className={`tab-button ${activeTab === category ? "active" : ""}`}

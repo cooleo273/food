@@ -8,7 +8,7 @@
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
   width: 85%; /* Reduced width */
   max-width: 500px; /* Reduced max-width */
-  max-height: 80vh; /* Limit height to 80% of viewport height */
+  max-height: 84vh; /* Limit height to 80% of viewport height */
   overflow: hidden;
   z-index: 1000;
   overflow-y: auto; /* Allow scrolling if content exceeds height */
@@ -25,7 +25,66 @@
 }
 .total{
   font-size: 1.2rem;
+  margin-top: 1rem;
 }
+.button-group {
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+  margin: 20px;
+}
+
+.button-group button {
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 25px; /* Rounded edges for a modern look */
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.button-group .primary {
+  background-color: #4caf50; /* Green for Next button */
+  color: white;
+}
+
+.button-group .primary:hover {
+  background-color: #45a049; /* Darker green on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Slight shadow on hover */
+}
+
+.button-group .secondary {
+  background-color: transparent;
+  color: #4caf50; /* Green text for Back button */
+  border: 2px solid #4caf50; /* Outline style */
+}
+
+.button-group .secondary:hover {
+  background-color: rgba(76, 175, 80, 0.1); /* Slight green tint on hover */
+  border-color: #45a049;
+}
+
+.button-group .secondary:active {
+  background-color: rgba(76, 175, 80, 0.2); /* Darker tint on active */
+}
+
+.button-group button:disabled {
+  background-color: #ddd;
+  color: #999;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .button-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .button-group button {
+    margin-bottom: 10px;
+    width: 100%;
+  }
+}
+
 
 /* When the modal is open, show the overlay */
 .overlay.active {
@@ -45,7 +104,7 @@
 
 
 .cart-header {
-  background-color: #3f51b5; /* Material UI primary color */
+  background-color: #4CAF50; /* Material UI primary color */
   color: white;
   padding: 15px;
   display: flex;
@@ -69,15 +128,18 @@
 }
 
 .cart-header button:hover {
-  color: #ff4081; /* Material UI accent color */
+  color: #e6a139; /* Material UI accent color */
 }
 
 .cart-items {
-  padding: 15px; /* Slightly reduced padding */
+  padding: 15px;
+  height: 50vh;
+    overflow-y: scroll; /* Slightly reduced padding */
 }
 
 .cart-item {
   display: flex;
+  gap: 1rem;
   align-items: center;
   border-bottom: 1px solid #f0f0f0;
   padding: 8px 0; /* Reduced padding */
@@ -88,8 +150,8 @@
 }
 
 .cart-item-img {
-  width: 60px; /* Reduced image size */
-  height: 60px; /* Reduced image size */
+  width: 90px; /* Reduced image size */
+  height: 90px; /* Reduced image size */
   border-radius: 8px;
   object-fit: cover;
   margin-right: 10px; /* Reduced margin */
@@ -112,15 +174,18 @@
 .quantity-control {
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
 .quantity-control span {
   margin: 0 8px; /* Reduced margin */
   font-size: 16px; /* Reduced font size */
 }
-
+.remove-button{
+  background-color: red !important;
+}
 .quantity-control button {
-  background: #ff4081; /* Accent color for remove button */
+  background: #e6a139; /* Accent color for remove button */
   color: white;
   border: none;
   border-radius: 6px;
@@ -128,9 +193,31 @@
   cursor: pointer;
   transition: background 0.3s ease;
 }
+.remove-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ff4d4d; /* Bright red color for the button */
+  color: white; /* Text color */
+  font-size: 16px; /* Font size */
+  font-weight: bold; /* Bold text */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners */
+  padding: 10px 15px; /* Padding */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s, transform 0.2s; /* Transition for hover effects */
+  outline: none; /* Remove outline on focus */
+}
+
+.remove-button:hover {
+  background-color: #ff1a1a; /* Darker red on hover */
+  transform: scale(1.05); /* Slightly enlarge button on hover */
+}
+
+
 
 .quantity-control button:hover {
-  background: #e91e63; /* Darker accent color on hover */
+  background: #e6a139; /* Darker accent color on hover */
 }
 
 h3 {
@@ -149,6 +236,9 @@ form {
 
 form .MuiTextField-root {
   margin: 0; /* Reset margin for TextField */
+}
+.back-button{
+  margin-right: 1rem;
 }
 
 button[type="submit"] {

@@ -158,7 +158,7 @@ const AdminUpdatePage = () => {
     >
       <option value="">Select Category</option>
       <option value="breakfast">Breakfast</option>
-      <option value="lunch">Lunch</option>
+      <option value="Main Dish">Main Dish</option>
       <option value="dessert">Dessert</option>
       <option value="drinks">Drinks</option>
     </select>

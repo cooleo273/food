@@ -72,7 +72,8 @@ const AdminMenuPage = () => {
         >
           <option value="">Select a cafe</option> {/* Placeholder option */}
           <option value="Cambridge">Cambridge</option>
-          <option value="Oxford">Oxford</option>
+          <option value="Bingham">Bingham</option>
+          <option value="Savor">Savor</option>
         </select>
         
         <input
@@ -102,7 +103,7 @@ const AdminMenuPage = () => {
         >
           <option value="">Select a category</option> {/* Add a placeholder option */}
           <option value="breakfast">Breakfast</option>
-          <option value="lunch">Lunch</option>
+          <option value="main dish">Main Dish</option>
           <option value="dessert">Dessert</option>
           <option value="drinks">Drinks</option>
         </select>

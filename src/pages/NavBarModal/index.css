@@ -39,9 +39,9 @@
     left: 0; /* Position for breakfast */
   }
   
-  .indicator.lunch {
+  .indicator.Main Dish {
     width: calc(100% / 4); /* Width for each button */
-    left: calc(100% / 4); /* Position for lunch */
+    left: calc(100% / 4); /* Position for Main Dish */
   }
   
   .indicator.dessert {
