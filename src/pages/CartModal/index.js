@@ -63,12 +63,13 @@ const CartModal = ({
       if (paymentResponse.payment_url) {
         // Redirect the user to the payment URL
         window.location.href = paymentResponse.payment_url;
-
-        // Set a timer to redirect the user back to the return URL after 15 minutes (900000 ms)
+      
+        // Optionally set a timer to redirect to a different URL after payment
         setTimeout(() => {
           window.location.href = "http://localhost:3000"; // Replace with the actual return URL
-        }, 90000); // 15 minutes in milliseconds
+        }, 9000); // 15 minutes in milliseconds
       }
+      
     } catch (error) {
       console.error("Payment error:", error);
     }

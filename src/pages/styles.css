@@ -82,7 +82,7 @@ body {
 }
 
 .css-1u169s7-MuiList-root{
-  padding-top: 0rem;
+  padding-top: 0rem !important;
 }
 
 .menu-item button {
@@ -1109,6 +1109,35 @@ Copy code
     text-align: left;
   }
 
+
+    .menu-body.with-sidebar {
+      margin-left: 0; /* Remove margin for mobile */
+    }
+  
+    .sidebar {
+      width: 100%; /* Full width on mobile */
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      z-index: 1000;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+  
+    .sidebar.open {
+      transform: translateX(0); /* Full width on open */
+    }
+  
+    .menu-and-cart {
+      flex-direction: column; /* Stack content vertically */
+    }
+  
+    .cart-section {
+      margin-left: 0;
+      margin-top: 20px;
+    }
+  
   .menu-list{
     justify-items: center;
   }
@@ -1149,6 +1178,7 @@ Copy code
   
   .menu-section{
     margin: 0rem;
+    padding: 0rem;
   }
   .logo img{
     width: 7rem;
@@ -1171,6 +1201,9 @@ Copy code
     padding: 7px 10px;
 
   } 
+  .css-170mmz-MuiDrawer-docked .MuiDrawer-paper{
+    width: 100% !important;
+  }
   .order-container{
     gap: 2rem;
       /* WIDTH: 26REM; */

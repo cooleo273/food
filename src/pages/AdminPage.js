@@ -28,10 +28,10 @@ const AdminStatusPage = () => {
             const orderDate = dayjs(order.orderDate); // Parse the order date
             const currentDate = dayjs(); // Current date and time
 
-            console.log('Parsed Order Date:', orderDate.format(), 'Current Date:', currentDate.format());
+            
 
             const isFutureOrder = orderDate.isAfter(currentDate); // Check if the order date is in the future (including time)
-            console.log('Order Date:', order.orderDate, 'Is Future:', isFutureOrder);
+            
 
             return isFutureOrder && order.paymentStatus === "paid"; // Only future paid orders
           }
@@ -126,7 +126,7 @@ const AdminStatusPage = () => {
           Pending Orders
         </button>
         <button className={activeTab === "scheduled" ? "active" : ""} onClick={() => handleTabChange("scheduled")}>
-          Scheduled Payments
+          Pre-Orders
         </button>
         <DropdownButton id="dropdown-status" title="Order Status">
           <Dropdown.Item onClick={() => handleTabChange("status", "being made")}>Being Made</Dropdown.Item>
@@ -145,7 +145,10 @@ const AdminStatusPage = () => {
               <p className="order-customer">
                 Customer: {order.customerName} ({order.customerPhone})
               </p>
-              <p className="order-items">Items: {order.items.join(", ")}</p>
+              <p className="order-items">
+  Items: {order.items?.map(item => `${item?.name || "Unknown item"} (x${item?.quantity || 0})`).join(", ")}
+</p>
+
               <p className="order-cafe">Cafe: {order.cafeName}</p>
               <p className="order-status">
                 Order Status: {order.orderStatus || "Pending"}
@@ -153,6 +156,9 @@ const AdminStatusPage = () => {
               <p className="order-payment-status">
                 Payment Status: {order.paymentStatus}
               </p>
+              <p className="order-date">
+          Order Date: {dayjs(order.orderDate).format("YYYY-MM-DD HH:mm:ss")}
+        </p>
 
               <div>
                 <DropdownButton id="dropdown-basic-button" title="Actions">

@@ -78,7 +78,7 @@ const MenuPage = () => {
   const initiatePayment = async (name, phone, totalAmount, cafeName, orderDate) => {
     const txRef = `CAF-${Date.now()}`;
     const title = `Order ${cart.length}`.slice(0, 16);
-    const orderedItems = cart.map((item) => item.name).join(", ");
+    const orderedItems = cart.map((item) => ({ name: item.name, quantity: item.quantity }));
   
     try {
       const response = await axios.post("https://food-server-seven.vercel.app/api/payment/pay", {
@@ -114,7 +114,7 @@ const MenuPage = () => {
       const response = await axios.post("https://food-server-seven.vercel.app/api/orders", {
         customerName: name,
         phoneNumber: phone,
-        itemsOrdered: cart.map((item) => item.name),
+        itemsOrdered: cart.map((item) => ({ name: item.name, quantity: item.quantity })),
         cafeNames: cart.map((item) => item.cafeName),
         tx_ref: `CAF-${Date.now()}`,
         paymentStatus: "pending",
