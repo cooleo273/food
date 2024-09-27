@@ -143,7 +143,7 @@ const CafeSidebar = ({ cafes, onCafeSelect, onToggleDrawer }) => {
               <StarIcon />
               <ListItemText
                 primary={cafe.cafe}
-                sx={{ marginLeft: 2, color: textColor }} // Dark Charcoal for list text
+                sx={{ marginLeft: 2, color: textColor, padding: 0 }} // Dark Charcoal for list text
               />
             </StyledListItem>
           ))}
