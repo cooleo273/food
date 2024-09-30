@@ -1,265 +1,85 @@
-.cart-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-  width: 85%; /* Reduced width */
-  max-width: 500px; /* Reduced max-width */
-  max-height: 84vh; /* Limit height to 80% of viewport height */
-  overflow: hidden;
-  z-index: 1000;
-  overflow-y: auto; /* Allow scrolling if content exceeds height */
-}
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* Black background with 50% opacity */
-  z-index: 999; /* Ensure it appears below the modal */
-  display: none; /* Initially hidden */
-}
-.total{
-  font-size: 1.2rem;
-  margin-top: 1rem;
-}
-.button-group {
+.cart-items {
   display: flex;
-  justify-content: flex-end; /* Align buttons to the right */
-  margin: 20px;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.button-group button {
-  padding: 12px 24px;
-  font-size: 16px;
-  border-radius: 25px; /* Rounded edges for a modern look */
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.button-group .primary {
-  background-color: #4caf50; /* Green for Next button */
-  color: white;
-}
-
-.button-group .primary:hover {
-  background-color: #45a049; /* Darker green on hover */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Slight shadow on hover */
-}
-
-.button-group .secondary {
-  background-color: transparent;
-  color: #4caf50; /* Green text for Back button */
-  border: 2px solid #4caf50; /* Outline style */
-}
-
-.button-group .secondary:hover {
-  background-color: rgba(76, 175, 80, 0.1); /* Slight green tint on hover */
-  border-color: #45a049;
-}
-
-.button-group .secondary:active {
-  background-color: rgba(76, 175, 80, 0.2); /* Darker tint on active */
-}
-
-.button-group button:disabled {
-  background-color: #ddd;
-  color: #999;
-  cursor: not-allowed;
-}
-
-@media (max-width: 600px) {
-  .button-group {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .button-group button {
-    margin-bottom: 10px;
-    width: 100%;
-  }
-}
-
-
-/* When the modal is open, show the overlay */
-.overlay.active {
-  display: block;
-}
-.cart-item-details h4 {
-  margin: 0;
-  color: #3f51b5; /* Material UI primary color */
-  font-size: 16px; /* Smaller font size for item title */
-}
-
-.cart-item-details p {
-  margin: 5px 0;
-  color: #555; /* Darker grey for text */
-  font-size: 14px; /* Smaller font size for item descriptions */
-}
-
-
-.cart-header {
-  background-color: #4CAF50; /* Material UI primary color */
-  color: white;
-  padding: 15px;
+.cart-item-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-radius: 12px 12px 0 0;
+  padding: 10px;
+  transition: box-shadow 0.3s ease;
+  border-radius: 8px;
 }
 
-.cart-header h2 {
-  margin: 0;
-  color: white;
-}
 
-.cart-header button {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
 
-.cart-header button:hover {
-  color: #e6a139; /* Material UI accent color */
-}
-
-.cart-items {
-  padding: 15px;
-  height: 50vh;
-    overflow-y: scroll; /* Slightly reduced padding */
-}
-
-.cart-item {
+.cart-item-content {
   display: flex;
-  gap: 1rem;
   align-items: center;
-  border-bottom: 1px solid #f0f0f0;
-  padding: 8px 0; /* Reduced padding */
-}
-
-.cart-item:last-child {
-  border-bottom: none; /* Remove border for last item */
 }
 
 .cart-item-img {
-  width: 90px; /* Reduced image size */
-  height: 90px; /* Reduced image size */
+  width: 70px;
+  height: 70px;
   border-radius: 8px;
-  object-fit: cover;
-  margin-right: 10px; /* Reduced margin */
+  margin-right: 16px;
+}
+.input-spacing {
+  margin-bottom: 16px; /* or your preferred spacing */
 }
 
-.cart-item-details {
-  flex: 1;
+.cart-items-container {
+  max-height: 400px; /* Set the maximum height for the scrollable area */
+  overflow-y: auto; /* Enable vertical scrolling */
+  margin-bottom: 16px; /* Space below the scrollable area */
 }
 
-.cart-item-details h4 {
-  margin: 0;
-  color: #3f51b5; /* Material UI primary color */
-}
-
-.cart-item-details p {
-  margin: 3px 0; /* Reduced margin */
-  color: #555; /* Darker grey for text */
-}
-
-.quantity-control {
+.cart-items {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column; /* Stack items vertically */
+}
+.scrollable-cart-items {
+  max-height: 300px; /* Maximum height for the scrollable area */
+  overflow-y: auto; /* Enables vertical scrolling */
+  padding: 10px; /* Padding for the content */
+  border-radius: 12px; /* Rounded corners for a softer look */
+  
+  
 }
 
-.quantity-control span {
-  margin: 0 8px; /* Reduced margin */
-  font-size: 16px; /* Reduced font size */
-}
-.remove-button{
-  background-color: red !important;
-}
-.quantity-control button {
-  background: #e6a139; /* Accent color for remove button */
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 0px 3px; /* Reduced padding */
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-.remove-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #ff4d4d; /* Bright red color for the button */
-  color: white; /* Text color */
-  font-size: 16px; /* Font size */
-  font-weight: bold; /* Bold text */
-  border: none; /* No border */
-  border-radius: 5px; /* Rounded corners */
-  padding: 10px 15px; /* Padding */
-  cursor: pointer; /* Pointer cursor on hover */
-  transition: background-color 0.3s, transform 0.2s; /* Transition for hover effects */
-  outline: none; /* Remove outline on focus */
+/* Custom scrollbar styles for Webkit browsers (Chrome, Safari) */
+.scrollable-cart-items::-webkit-scrollbar {
+  width: 10px; /* Width of the scrollbar */
 }
 
-.remove-button:hover {
-  background-color: #ff1a1a; /* Darker red on hover */
-  transform: scale(1.05); /* Slightly enlarge button on hover */
+.scrollable-cart-items::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Light background for the track */
+  border-radius: 10px; /* Rounded corners for the track */
 }
 
-
-
-.quantity-control button:hover {
-  background: #e6a139; /* Darker accent color on hover */
+.scrollable-cart-items::-webkit-scrollbar-thumb {
+  background: #007BFF; /* Bright color for the thumb */
+  border-radius: 10px; /* Rounded corners for the thumb */
 }
 
-h3 {
-  padding: 10px 15px; /* Slightly reduced padding */
-  margin: 0;
-  color: #3f51b5; /* Primary color */
-  font-weight: 500;
+.scrollable-cart-items::-webkit-scrollbar-thumb:hover {
+  background: #0056b3; /* Darker shade on hover */
 }
 
-form {
-  padding: 15px; /* Reduced padding */
-  display: flex;
-  flex-direction: column;
-  gap: 10px; /* Reduced gap */
+/* Optional: Smooth scrolling */
+.scrollable-cart-items {
+  scroll-behavior: smooth; /* Enables smooth scrolling */
 }
 
-form .MuiTextField-root {
-  margin: 0; /* Reset margin for TextField */
-}
-.back-button{
-  margin-right: 1rem;
-}
-
-button[type="submit"] {
-  background-color: #3f51b5; /* Primary color for submit button */
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 10px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.3s ease;
+/* Styles for the cart item card */
+.cart-item-card {
+  border-radius: 8px; /* Rounded corners for cart item cards */
+  transition: transform 0.2s; /* Animation for hover effect */
 }
 
-button[type="submit"]:hover {
-  background-color: #303f9f; /* Darker primary color on hover */
-}
-
-/* Responsive adjustments */
-@media (max-width: 600px) {
-  .cart-modal {
-    width: 90%; /* Adjust width for small screens */
-    max-width: none; /* Allow full width on small screens */
-  }
+.cart-item-card:hover {
+   translate: scale(1.001);/* Slightly enlarge on hover */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Deeper shadow on hover */
 }

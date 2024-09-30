@@ -1,11 +1,26 @@
 import React, { useState } from "react";
-import { IconButton, TextField, MenuItem } from "@mui/material";
+import "./index.css";
+import {
+  Dialog,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  MenuItem,
+  Typography,
+  Card,
+  CardContent,
+  CardActions,
+  IconButton,
+  Divider,
+} from "@mui/material";
 import { Add, Remove } from "@mui/icons-material";
+import Close from "@mui/icons-material/Close";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DesktopDatePicker, TimePicker } from "@mui/x-date-pickers";
+
 import dayjs from "dayjs";
-import "./index.css";
 
 const CartModal = ({
   isOpen,
@@ -14,196 +29,290 @@ const CartModal = ({
   initiatePayment,
   onRemoveFromCart,
   updateCartItemQuantity,
+  paymentDetails,
+  setPaymentDetails,
 }) => {
-  const [paymentDetails, setPaymentDetails] = useState({
-    name: "",
-    phone: "",
-    date: null,
-    time: null,
-    deliveryType: "now", // Add deliveryType state
-  });
-  const [step, setStep] = useState(1); // State for managing steps (1 = Cart, 2 = Payment)
-
-  if (!isOpen) return null;
+  const [currentPage, setCurrentPage] = useState("cart"); // Track current page
 
   const totalAmount = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
 
-  const handleChange = (event) => {
-    setPaymentDetails({
-      ...paymentDetails,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  const handleSubmit = async (event) => {
+  const handleSubmitOrder = async (event) => {
     event.preventDefault();
-    const { name, phone, date, time, deliveryType } = paymentDetails;
+    const { studentName, parentName, phone, deliveryType, date, time, grade } =
+      paymentDetails;
 
-    // If scheduled, combine date and time; otherwise, use the current date and time.
     const orderDate =
       deliveryType === "scheduled"
         ? dayjs(date)
             .hour(dayjs(time).hour())
             .minute(dayjs(time).minute())
             .toISOString()
-        : new Date().toISOString(); // Use the current date and time for 'now'
+        : new Date().toISOString();
 
     try {
       const paymentResponse = await initiatePayment(
-        name,
+        paymentDetails.payerType === "parent" ? parentName : studentName,
         phone,
         totalAmount,
         cartItems[0]?.cafeName,
-        orderDate // Always pass a valid date (either scheduled or current)
+        orderDate,
+        grade // Include grade in payment initiation
       );
 
       if (paymentResponse.payment_url) {
-        // Redirect the user to the payment URL
         window.location.href = paymentResponse.payment_url;
-      
-        // Optionally set a timer to redirect to a different URL after payment
-        setTimeout(() => {
-          window.location.href = "http://localhost:3000"; // Replace with the actual return URL
-        }, 9000); // 15 minutes in milliseconds
       }
-      
     } catch (error) {
       console.error("Payment error:", error);
     }
   };
 
-  return (
-    <>
-      <div className={`overlay ${isOpen ? "active" : ""}`} onClick={onClose} />{" "}
-      {/* Overlay div */}
-      <div className="cart-modal">
-        <div className="cart-header">
-          <h2>{step === 1 ? "My Cart" : "Payment Details"}</h2>
-          <button onClick={onClose}>Close</button>
-        </div>
-
-        {step === 1 && (
-          <>
-            <div className="cart-items">
-              {cartItems.map((item) => (
-                <div key={item._id} className="cart-item">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="cart-item-img"
-                  />
-                  <div className="cart-item-details">
-                    <h4>{item.name}</h4>
-                    <p>{item.cafeName}</p>
-                    <p>Price: {item.price.toFixed(2)} ETB</p>
-                    <div className="quantity-control">
-                      <div>
-                        <IconButton
-                          onClick={() => updateCartItemQuantity(item, -1)}
-                          disabled={item.quantity <= 1}
-                        >
-                          <Remove />
-                        </IconButton>
-                        <span>{item.quantity}</span>
-                        <IconButton
-                          onClick={() => updateCartItemQuantity(item, 1)}
-                        >
-                          <Add />
-                        </IconButton>
-                      </div>
-                      
-                      <button
-                        onClick={onRemoveFromCart}
-                        className="remove-button"
-                      >
-                        <span className="icon">✖</span>
-                        
-                      </button>
-                    </div>
-                  </div>
+  const renderCartItems = () => (
+    <div
+      className="scrollable-cart-items"
+      style={{ maxHeight: "450px", overflowY: "scroll" }}
+    >
+      <Typography variant="h5" align="center" gutterBottom>
+        My Cart
+      </Typography>
+      {cartItems.length === 0 ? (
+        <Typography align="center">Your cart is empty.</Typography>
+      ) : (
+        cartItems.map((item) => (
+          <Card key={item._id} className="cart-item-card">
+            <CardContent>
+              <div className="cart-item-content">
+                <img src={item.image} alt={item.name} className="cart-item-img" />
+                <div className="cart-item-info">
+                  <Typography variant="h6">{item.name}</Typography>
+                  <Typography>Price: {item.price.toFixed(2)} ETB</Typography>
+                  <Typography>Quantity: {item.quantity}</Typography>
                 </div>
-              ))}
-            </div>
-            <h3 className="total">Total: {totalAmount.toFixed(2)} ETB</h3>
-            <div className="button-group">
-              <button onClick={() => setStep(2)} className="next-button">
-                Next
-              </button>
-            </div>
-          </>
-        )}
-
-        {step === 2 && (
-          <>
-            <form onSubmit={handleSubmit}>
-              <TextField
-                label="Name"
-                name="name"
-                value={paymentDetails.name}
-                onChange={handleChange}
-                required
-              />
-              <TextField
-                label="Phone"
-                name="phone"
-                value={paymentDetails.phone}
-                onChange={handleChange}
-                required
-              />
-
-              {/* Delivery type dropdown */}
-              <TextField
-                select
-                label="Delivery Type"
-                name="deliveryType"
-                value={paymentDetails.deliveryType}
-                onChange={handleChange}
-                required
-              >
-                <MenuItem value="now">Now</MenuItem>
-                <MenuItem value="scheduled">Scheduled</MenuItem>
-              </TextField>
-
-              {/* Conditionally render date and time pickers if delivery type is "scheduled" */}
-              {paymentDetails.deliveryType === "scheduled" && (
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DesktopDatePicker
-                    label="Select Date"
-                    value={paymentDetails.date}
-                    onChange={(newValue) =>
-                      setPaymentDetails({ ...paymentDetails, date: newValue })
-                    }
-                    renderInput={(params) => <TextField {...params} required />}
-                  />
-                  <TimePicker
-                    label="Select Time"
-                    value={paymentDetails.time}
-                    onChange={(newValue) =>
-                      setPaymentDetails({ ...paymentDetails, time: newValue })
-                    }
-                    renderInput={(params) => <TextField {...params} required />}
-                  />
-                </LocalizationProvider>
-              )}
-
-              <div className="button-group">
-                <button
-                  type="button"
-                  onClick={() => setStep(1)}
-                  className="back-button"
-                >
-                  Back
-                </button>
-                <button type="submit">Proceed to Payment</button>
               </div>
-            </form>
+            </CardContent>
+            <CardActions>
+              <IconButton
+                onClick={() => updateCartItemQuantity(item, -1)}
+                disabled={item.quantity <= 1}
+              >
+                <Remove />
+              </IconButton>
+              <span>{item.quantity}</span>
+              <IconButton onClick={() => updateCartItemQuantity(item, 1)}>
+                <Add />
+              </IconButton>
+              <IconButton onClick={() => onRemoveFromCart(item)} color="secondary">
+                <Close />
+              </IconButton>
+            </CardActions>
+          </Card>
+        ))
+      )}
+      <Divider />
+      <Typography variant="h6" align="right" style={{ marginTop: "16px" }}>
+        Total: {totalAmount.toFixed(2)} ETB
+      </Typography>
+    </div>
+  );
+
+  const renderPaymentForm = () => {
+    // Check if any cafe in the cart is Cambridge or Bingham
+    const isCambridgeOrBingham = cartItems.some(
+      (item) => item.cafeName === "Cambridge" || item.cafeName === "Bingham"
+    );
+
+    return (
+      <form onSubmit={handleSubmitOrder} className="cart-items-container">
+        <Typography variant="h5" align="center" gutterBottom>
+          Payment Information
+        </Typography>
+
+        <TextField
+          select
+          label="Who is paying?"
+          name="payerType"
+          value={paymentDetails.payerType}
+          onChange={(e) =>
+            setPaymentDetails({ ...paymentDetails, payerType: e.target.value })
+          }
+          fullWidth
+          required
+          style={{ marginBottom: "16px" }} // Added margin
+        >
+          <MenuItem value="student">Student</MenuItem>
+          <MenuItem value="parent">Parent</MenuItem>
+        </TextField>
+
+        {paymentDetails.payerType === "student" && (
+          <TextField
+            label="Student Name"
+            variant="outlined"
+            fullWidth
+            value={paymentDetails.studentName}
+            onChange={(e) =>
+              setPaymentDetails({ ...paymentDetails, studentName: e.target.value })
+            }
+            required
+            style={{ marginBottom: "16px" }} // Added margin
+          />
+        )}
+
+        {paymentDetails.payerType === "parent" && (
+          <>
+            <TextField
+              label="Parent Name"
+              variant="outlined"
+              fullWidth
+              value={paymentDetails.parentName}
+              onChange={(e) =>
+                setPaymentDetails({ ...paymentDetails, parentName: e.target.value })
+              }
+              required
+              style={{ marginBottom: "16px" }} // Added margin
+            />
+            <TextField
+              label="Student Name"
+              variant="outlined"
+              fullWidth
+              value={paymentDetails.studentName}
+              onChange={(e) =>
+                setPaymentDetails({ ...paymentDetails, studentName: e.target.value })
+              }
+              required
+              style={{ marginBottom: "16px" }} // Added margin
+            />
           </>
         )}
-      </div>
-    </>
+
+        <TextField
+          label="Phone"
+          variant="outlined"
+          fullWidth
+          value={paymentDetails.phone}
+          onChange={(e) =>
+            setPaymentDetails({ ...paymentDetails, phone: e.target.value })
+          }
+          required
+          style={{ marginBottom: "16px" }} // Added margin
+        />
+
+        <TextField
+          select
+          label="Delivery Type"
+          name="deliveryType"
+          value={paymentDetails.deliveryType}
+          onChange={(e) =>
+            setPaymentDetails({
+              ...paymentDetails,
+              deliveryType: e.target.value,
+            })
+          }
+          fullWidth
+          required
+          style={{ marginBottom: "16px" }} // Added margin
+        >
+          <MenuItem value="now">Now</MenuItem>
+          <MenuItem value="scheduled">Scheduled</MenuItem>
+        </TextField>
+
+        {paymentDetails.deliveryType === "scheduled" && (
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DesktopDatePicker
+              label="Select Date"
+              value={paymentDetails.date}
+              onChange={(newValue) =>
+                setPaymentDetails({ ...paymentDetails, date: newValue })
+              }
+              renderInput={(params) => (
+                <TextField {...params} fullWidth required style={{ marginBottom: "16px" }} />
+              )}
+            />
+            <TimePicker
+              label="Select Time"
+              value={paymentDetails.time}
+              onChange={(newValue) =>
+                setPaymentDetails({ ...paymentDetails, time: newValue })
+              }
+              renderInput={(params) => (
+                <TextField {...params} fullWidth required style={{ marginBottom: "16px" }} />
+              )}
+            />
+          </LocalizationProvider>
+        )}
+
+        {isCambridgeOrBingham && (
+          <TextField
+            label="Grade"
+            variant="outlined"
+            fullWidth
+            value={paymentDetails.grade}
+            onChange={(e) =>
+              setPaymentDetails({ ...paymentDetails, grade: e.target.value })
+            }
+            required
+            style={{ marginBottom: "16px" }} // Added margin
+          />
+        )}
+      </form>
+    );
+  };
+
+  return (
+    <Dialog open={isOpen} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogContent>
+        {currentPage === "cart" ? (
+          <div>
+            {renderCartItems()}
+            <Divider />
+          </div>
+        ) : (
+          <div>
+            {renderPaymentForm()}
+            <Divider />
+          </div>
+        )}
+      </DialogContent>
+      <DialogActions style={{ justifyContent: "space-between" }}>
+        {currentPage === "cart" ? (
+          <>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setCurrentPage("payment")}
+              style={{ minWidth: "100px" }} // Adjust button width here
+            >
+              Next
+            </Button>
+            <Button onClick={onClose} color="secondary">
+              Close
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => setCurrentPage("cart")}
+              style={{ minWidth: "100px" }} // Adjust button width here
+            >
+              Back
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              onClick={handleSubmitOrder}
+              style={{ minWidth: "100px" }} // Adjust button width here
+            >
+              Proceed to Payment
+            </Button>
+          </>
+        )}
+      </DialogActions>
+    </Dialog>
   );
 };
 

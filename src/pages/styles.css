@@ -532,7 +532,7 @@ Copy code
 .tabs {
   display: flex;
   justify-content: center;
-  margin: 0rem;
+  margin: 2rem;
 }
 
 .tab-button {

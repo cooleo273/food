@@ -145,6 +145,10 @@ const AdminStatusPage = () => {
               <p className="order-customer">
                 Customer: {order.customerName} ({order.customerPhone})
               </p>
+              {order.parentsName && (
+  <p>Student: {order.parentsName}</p>
+)}
+
               <p className="order-items">
   Items: {order.items?.map(item => `${item?.name || "Unknown item"} (x${item?.quantity || 0})`).join(", ")}
 </p>
@@ -156,6 +160,10 @@ const AdminStatusPage = () => {
               <p className="order-payment-status">
                 Payment Status: {order.paymentStatus}
               </p>
+              <p className="order-payment-status">
+                Grade: {order.grade || "No Grade"}
+              </p>
+
               <p className="order-date">
           Order Date: {dayjs(order.orderDate).format("YYYY-MM-DD HH:mm:ss")}
         </p>
