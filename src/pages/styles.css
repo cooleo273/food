@@ -134,6 +134,9 @@ ul{
   display: block;
   margin-top: 10px;
 }
+.logout-button p{
+  margin: 0rem;
+}
 
 .admin-form input,
 .admin-form select {
