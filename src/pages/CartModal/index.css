@@ -31,7 +31,7 @@
 }
 
 .cart-items-container {
-  max-height: 400px; /* Set the maximum height for the scrollable area */
+  max-height: 500px; /* Set the maximum height for the scrollable area */
   overflow-y: auto; /* Enable vertical scrolling */
   margin-bottom: 16px; /* Space below the scrollable area */
 }
@@ -41,7 +41,7 @@
   flex-direction: column; /* Stack items vertically */
 }
 .scrollable-cart-items {
-  max-height: 300px; /* Maximum height for the scrollable area */
+  max-height: 400px; /* Maximum height for the scrollable area */
   overflow-y: auto; /* Enables vertical scrolling */
   padding: 10px; /* Padding for the content */
   border-radius: 12px; /* Rounded corners for a softer look */
@@ -60,12 +60,12 @@
 }
 
 .scrollable-cart-items::-webkit-scrollbar-thumb {
-  background: #007BFF; /* Bright color for the thumb */
+  background: #4CAF50; /* Bright color for the thumb */
   border-radius: 10px; /* Rounded corners for the thumb */
 }
 
 .scrollable-cart-items::-webkit-scrollbar-thumb:hover {
-  background: #0056b3; /* Darker shade on hover */
+  background: #4CAF50; /* Darker shade on hover */
 }
 
 /* Optional: Smooth scrolling */

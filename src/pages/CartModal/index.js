@@ -103,7 +103,7 @@ const CartModal = ({
   const renderCartItems = () => (
     <div
       className="scrollable-cart-items"
-      style={{ maxHeight: "450px", overflowY: "scroll" }}
+      style={{ maxHeight: "500px", overflowY: "scroll" }}
     >
       <Typography variant="h5" align="center" gutterBottom>
         My Cart
@@ -329,25 +329,24 @@ const CartModal = ({
       <DialogActions style={{ justifyContent: "space-between" }}>
         {currentPage === "cart" ? (
           <>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleNextPage}
-              style={{ minWidth: "100px" }}
-            >
-              Next
-            </Button>
+            
             <Button onClick={onClose} color="secondary">
               Close
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleNextPage}
+              style={{ minWidth: "100px", background: "#FE8C00" }}
+            >
+              Next
             </Button>
           </>
         ) : (
           <>
             <Button
               variant="contained"
-              color="secondary"
               onClick={() => setCurrentPage("cart")}
-              style={{ minWidth: "100px" }}
+              style={{ minWidth: "100px", background: "#FE8C00" }}
             >
               Back
             </Button>
@@ -356,7 +355,7 @@ const CartModal = ({
               variant="contained"
               color="primary"
               onClick={handleSubmitOrder}
-              style={{ minWidth: "100px" }}
+              style={{ minWidth: "100px", background: "#4CAF50" }}
             >
               Proceed to Payment
             </Button>
