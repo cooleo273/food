@@ -17,11 +17,14 @@ const MenuPage = () => {
     const storedCart = localStorage.getItem("cart");
     return storedCart ? JSON.parse(storedCart) : [];
   });
-  const [notificationOpen, setNotificationOpen] = useState(true);
-  const [notificationMessage, setNotificationMessage] = useState("");
+  const [notification, setNotification] = useState({
+    message: "",
+    severity: "info",
+    open: false,
+  });
   const [loading, setLoading] = useState(true);
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
-  
+
   // Lifted paymentDetails state
   const [paymentDetails, setPaymentDetails] = useState({
     payerType: "",
@@ -31,7 +34,7 @@ const MenuPage = () => {
     date: null,
     time: null,
     deliveryType: "now",
-    grade:""
+    grade: "",
   });
 
   useEffect(() => {
@@ -40,7 +43,8 @@ const MenuPage = () => {
       setCart(storedCart);
     }
 
-    axios.get("https://food-server-seven.vercel.app/api/menu")
+    axios
+      .get("https://food-server-seven.vercel.app/api/menu")
       .then((response) => {
         setMenus(response.data);
         setLoading(false);
@@ -64,6 +68,15 @@ const MenuPage = () => {
   };
 
   const handleAddToCart = (item, cafe) => {
+    if (cart.length > 0 && cart[0].cafeName !== cafe) {
+      setNotification({
+        message: `Can't choose items from different cafes. Please stick to ${cart[0].cafeName}.`,
+        severity: "error", // Set severity to error for red color
+        open: true,
+      });
+      return;
+    }
+
     const existingItemIndex = cart.findIndex(
       (cartItem) => cartItem._id === item._id && cartItem.cafeName === cafe
     );
@@ -73,17 +86,23 @@ const MenuPage = () => {
         ...item,
         cafeName: cafe,
         quantity: 1,
-        image: item.photo
+        image: item.photo,
       };
       setCart((prevCart) => [...prevCart, newItem]);
-      setNotificationMessage(`${item.name} added to cart!`);
-      setNotificationOpen(true);
+      setNotification({
+        message: `${item.name} added to cart!`,
+        severity: "success",
+        open: true,
+      });
     } else {
       const updatedCart = [...cart];
       updatedCart[existingItemIndex].quantity += 1;
       setCart(updatedCart);
-      setNotificationMessage(`${item.name} quantity updated in cart!`);
-      setNotificationOpen(true);
+      setNotification({
+        message: `${item.name} quantity updated in cart!`,
+        severity: "success",
+        open: true,
+      });
     }
   };
 
@@ -93,36 +112,35 @@ const MenuPage = () => {
     const orderedItems = cart.map((item) => ({ name: item.name, quantity: item.quantity }));
 
     try {
-        const response = await axios.post("https://food-server-seven.vercel.app/api/payment/pay", {
-            amount: totalAmount,
-            currency: "ETB",
-            first_name: name,
-            parent_name: paymentDetails.payerType === "parent" ? paymentDetails.studentName : null,
-            tx_ref: txRef,
-            callback_url: `https://food-server-seven.vercel.app/api/payment/verify?tx_ref=${txRef}`,
-            returnUrl: "https://savoraddis.netlify.app",
-            customization: {
-                title: title,
-                description: `Payment for ${cart.length} items`,
-            },
-            phoneNumber: phone,
-            cafeName: cafeName,
-            itemOrdered: orderedItems,
-            orderDate: orderDate,
-            grade: grade // Add grade to the request payload
-        });
+      const response = await axios.post("https://food-server-seven.vercel.app/api/payment/pay", {
+        amount: totalAmount,
+        currency: "ETB",
+        first_name: name,
+        parent_name: paymentDetails.payerType === "parent" ? paymentDetails.studentName : null,
+        tx_ref: txRef,
+        callback_url: `https://food-server-seven.vercel.app/api/payment/verify?tx_ref=${txRef}`,
+        returnUrl: "https://savoraddis.netlify.app",
+        customization: {
+          title: title,
+          description: `Payment for ${cart.length} items`,
+        },
+        phoneNumber: phone,
+        cafeName: cafeName,
+        itemOrdered: orderedItems,
+        orderDate: orderDate,
+        grade: grade, // Add grade to the request payload
+      });
 
-        if (response.data && response.data.payment_url) {
-            return { payment_url: response.data.payment_url, txRef };
-        } else {
-            throw new Error("Invalid response format");
-        }
+      if (response.data && response.data.payment_url) {
+        return { payment_url: response.data.payment_url, txRef };
+      } else {
+        throw new Error("Invalid response format");
+      }
     } catch (error) {
-        console.error("Payment initialization error:", error.response ? error.response.data : error.message);
-        throw error;
+      console.error("Payment initialization error:", error.response ? error.response.data : error.message);
+      throw error;
     }
-};
-
+  };
 
   const placeOrder = async () => {
     try {
@@ -140,7 +158,7 @@ const MenuPage = () => {
       if (response.data) {
         alert(`Your order has been placed!`);
         setCart([]);
-        setPaymentDetails({ // Reset payment details
+        setPaymentDetails({
           payerType: "",
           studentName: "",
           parentName: "",
@@ -171,7 +189,10 @@ const MenuPage = () => {
   };
 
   const handleCloseNotification = () => {
-    setNotificationOpen(false);
+    setNotification((prevNotification) => ({
+      ...prevNotification,
+      open: false,
+    }));
   };
 
   const handleCafeSelect = (cafe) => {
@@ -180,7 +201,7 @@ const MenuPage = () => {
   };
 
   const filteredMenus = activeCafe
-    ? activeCafe.items.filter(item => item.category === activeTab)
+    ? activeCafe.items.filter((item) => item.category === activeTab)
     : [];
 
   return (
@@ -226,7 +247,9 @@ const MenuPage = () => {
                 </ul>
               </div>
             ) : (
-              <Alert severity="error">Sorry, no menu is available at the moment. Please check back later or try refreshing.</Alert>
+              <Alert severity="error">
+                Sorry, no menu is available at the moment. Please check back later or try refreshing.
+              </Alert>
             )}
           </div>
 
@@ -241,7 +264,9 @@ const MenuPage = () => {
                 updateCartItemQuantity={updateCartItemQuantity}
                 placeOrder={placeOrder}
                 payerType={paymentDetails.payerType} // Pass payerType down
-                setPayerType={(type) => setPaymentDetails(prev => ({ ...prev, payerType: type }))} // Update payerType
+                setPayerType={(type) =>
+                  setPaymentDetails((prev) => ({ ...prev, payerType: type }))
+                } // Update payerType
                 paymentDetails={paymentDetails} // Pass down payment details
                 setPaymentDetails={setPaymentDetails} // Pass down setter for payment details
               />
@@ -251,13 +276,13 @@ const MenuPage = () => {
       </div>
 
       <Snackbar
-        open={notificationOpen}
+        open={notification.open}
         autoHideDuration={3000}
         onClose={handleCloseNotification}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <Alert onClose={handleCloseNotification} severity="success">
-          {notificationMessage}
+        <Alert onClose={handleCloseNotification} severity={notification.severity}>
+          {notification.message}
         </Alert>
       </Snackbar>
     </div>

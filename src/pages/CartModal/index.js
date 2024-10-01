@@ -13,6 +13,8 @@ import {
   CardActions,
   IconButton,
   Divider,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { Add, Remove } from "@mui/icons-material";
 import Close from "@mui/icons-material/Close";
@@ -33,6 +35,11 @@ const CartModal = ({
   setPaymentDetails,
 }) => {
   const [currentPage, setCurrentPage] = useState("cart"); // Track current page
+  const [notification, setNotification] = useState({
+    open: false,
+    message: "",
+    severity: "error",
+  });
 
   const totalAmount = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -68,6 +75,22 @@ const CartModal = ({
     } catch (error) {
       console.error("Payment error:", error);
     }
+  };
+
+  const handleNextPage = () => {
+    if (cartItems.length === 0) {
+      setNotification({
+        open: true,
+        message: "Your cart is empty. Please add items before proceeding.",
+        severity: "error",
+      });
+    } else {
+      setCurrentPage("payment");
+    }
+  };
+
+  const handleCloseNotification = () => {
+    setNotification({ ...notification, open: false });
   };
 
   const renderCartItems = () => (
@@ -119,7 +142,6 @@ const CartModal = ({
   );
 
   const renderPaymentForm = () => {
-    // Check if any cafe in the cart is Cambridge or Bingham
     const isCambridgeOrBingham = cartItems.some(
       (item) => item.cafeName === "Cambridge" || item.cafeName === "Bingham"
     );
@@ -140,7 +162,7 @@ const CartModal = ({
           }
           fullWidth
           required
-          style={{ marginBottom: "16px" }} // Added margin
+          style={{ marginBottom: "16px" }}
         >
           <MenuItem value="student">Student</MenuItem>
           <MenuItem value="parent">Parent</MenuItem>
@@ -156,7 +178,7 @@ const CartModal = ({
               setPaymentDetails({ ...paymentDetails, studentName: e.target.value })
             }
             required
-            style={{ marginBottom: "16px" }} // Added margin
+            style={{ marginBottom: "16px" }}
           />
         )}
 
@@ -171,7 +193,7 @@ const CartModal = ({
                 setPaymentDetails({ ...paymentDetails, parentName: e.target.value })
               }
               required
-              style={{ marginBottom: "16px" }} // Added margin
+              style={{ marginBottom: "16px" }}
             />
             <TextField
               label="Student Name"
@@ -182,7 +204,7 @@ const CartModal = ({
                 setPaymentDetails({ ...paymentDetails, studentName: e.target.value })
               }
               required
-              style={{ marginBottom: "16px" }} // Added margin
+              style={{ marginBottom: "16px" }}
             />
           </>
         )}
@@ -196,7 +218,7 @@ const CartModal = ({
             setPaymentDetails({ ...paymentDetails, phone: e.target.value })
           }
           required
-          style={{ marginBottom: "16px" }} // Added margin
+          style={{ marginBottom: "16px" }}
         />
 
         <TextField
@@ -212,7 +234,7 @@ const CartModal = ({
           }
           fullWidth
           required
-          style={{ marginBottom: "16px" }} // Added margin
+          style={{ marginBottom: "16px" }}
         >
           <MenuItem value="now">Now</MenuItem>
           <MenuItem value="scheduled">Scheduled</MenuItem>
@@ -253,7 +275,7 @@ const CartModal = ({
               setPaymentDetails({ ...paymentDetails, grade: e.target.value })
             }
             required
-            style={{ marginBottom: "16px" }} // Added margin
+            style={{ marginBottom: "16px" }}
           />
         )}
       </form>
@@ -281,8 +303,8 @@ const CartModal = ({
             <Button
               variant="contained"
               color="primary"
-              onClick={() => setCurrentPage("payment")}
-              style={{ minWidth: "100px" }} // Adjust button width here
+              onClick={handleNextPage}
+              style={{ minWidth: "100px" }}
             >
               Next
             </Button>
@@ -296,7 +318,7 @@ const CartModal = ({
               variant="contained"
               color="secondary"
               onClick={() => setCurrentPage("cart")}
-              style={{ minWidth: "100px" }} // Adjust button width here
+              style={{ minWidth: "100px" }}
             >
               Back
             </Button>
@@ -305,13 +327,26 @@ const CartModal = ({
               variant="contained"
               color="primary"
               onClick={handleSubmitOrder}
-              style={{ minWidth: "100px" }} // Adjust button width here
+              style={{ minWidth: "100px" }}
             >
               Proceed to Payment
             </Button>
           </>
         )}
       </DialogActions>
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={4000}
+        onClose={handleCloseNotification}
+      >
+        <Alert
+          onClose={handleCloseNotification}
+          severity={notification.severity}
+          sx={{ width: "100%" }}
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
     </Dialog>
   );
 };
