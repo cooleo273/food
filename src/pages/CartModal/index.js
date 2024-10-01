@@ -45,12 +45,11 @@ const CartModal = ({
     (total, item) => total + item.price * item.quantity,
     0
   );
-
   const handleSubmitOrder = async (event) => {
     event.preventDefault();
     const { studentName, parentName, phone, deliveryType, date, time, grade } =
       paymentDetails;
-
+  
     const orderDate =
       deliveryType === "scheduled"
         ? dayjs(date)
@@ -58,24 +57,32 @@ const CartModal = ({
             .minute(dayjs(time).minute())
             .toISOString()
         : new Date().toISOString();
-
+  
     try {
       const paymentResponse = await initiatePayment(
-        paymentDetails.payerType === "parent" ? parentName : studentName,
+        cartItems.some(item => item.cafeName === "Savor") ? studentName : (paymentDetails.payerType === "parent" ? parentName : studentName),
         phone,
         totalAmount,
         cartItems[0]?.cafeName,
         orderDate,
         grade // Include grade in payment initiation
       );
-
+  
       if (paymentResponse.payment_url) {
-        window.location.href = paymentResponse.payment_url;
+        // Open the payment URL in a new tab
+        window.open(paymentResponse.payment_url, "_blank");
+  
+        // Redirect to the main page after a timeout
+        setTimeout(() => {
+          window.location.href = "https://savoraddis.netlify.app/";
+        }, 2000); // 2000 ms delay before redirecting
       }
     } catch (error) {
       console.error("Payment error:", error);
     }
   };
+  
+  
 
   const handleNextPage = () => {
     if (cartItems.length === 0) {
@@ -146,31 +153,37 @@ const CartModal = ({
       (item) => item.cafeName === "Cambridge" || item.cafeName === "Bingham"
     );
 
+    const isFromSavor = cartItems.some((item) => item.cafeName === "Savor");
+
     return (
       <form onSubmit={handleSubmitOrder} className="cart-items-container">
         <Typography variant="h5" align="center" gutterBottom>
           Payment Information
         </Typography>
 
-        <TextField
-          select
-          label="Who is paying?"
-          name="payerType"
-          value={paymentDetails.payerType}
-          onChange={(e) =>
-            setPaymentDetails({ ...paymentDetails, payerType: e.target.value })
-          }
-          fullWidth
-          required
-          style={{ marginBottom: "16px" }}
-        >
-          <MenuItem value="student">Student</MenuItem>
-          <MenuItem value="parent">Parent</MenuItem>
-        </TextField>
-
-        {paymentDetails.payerType === "student" && (
+        {/* Payer type selection only if not from Savor */}
+        {!isFromSavor && (
           <TextField
-            label="Student Name"
+            select
+            label="Who is paying?"
+            name="payerType"
+            value={paymentDetails.payerType}
+            onChange={(e) =>
+              setPaymentDetails({ ...paymentDetails, payerType: e.target.value })
+            }
+            fullWidth
+            required
+            style={{ marginBottom: "16px" }}
+          >
+            <MenuItem value="student">Student</MenuItem>
+            <MenuItem value="parent">Parent</MenuItem>
+          </TextField>
+        )}
+
+        {/* If it's from Savor, only require customer name */}
+        {isFromSavor ? (
+          <TextField
+            label="Customer Name"
             variant="outlined"
             fullWidth
             value={paymentDetails.studentName}
@@ -180,32 +193,48 @@ const CartModal = ({
             required
             style={{ marginBottom: "16px" }}
           />
-        )}
-
-        {paymentDetails.payerType === "parent" && (
+        ) : (
           <>
-            <TextField
-              label="Parent Name"
-              variant="outlined"
-              fullWidth
-              value={paymentDetails.parentName}
-              onChange={(e) =>
-                setPaymentDetails({ ...paymentDetails, parentName: e.target.value })
-              }
-              required
-              style={{ marginBottom: "16px" }}
-            />
-            <TextField
-              label="Student Name"
-              variant="outlined"
-              fullWidth
-              value={paymentDetails.studentName}
-              onChange={(e) =>
-                setPaymentDetails({ ...paymentDetails, studentName: e.target.value })
-              }
-              required
-              style={{ marginBottom: "16px" }}
-            />
+            {paymentDetails.payerType === "student" && (
+              <TextField
+                label="Student Name"
+                variant="outlined"
+                fullWidth
+                value={paymentDetails.studentName}
+                onChange={(e) =>
+                  setPaymentDetails({ ...paymentDetails, studentName: e.target.value })
+                }
+                required
+                style={{ marginBottom: "16px" }}
+              />
+            )}
+
+            {paymentDetails.payerType === "parent" && (
+              <>
+                <TextField
+                  label="Parent Name"
+                  variant="outlined"
+                  fullWidth
+                  value={paymentDetails.parentName}
+                  onChange={(e) =>
+                    setPaymentDetails({ ...paymentDetails, parentName: e.target.value })
+                  }
+                  required
+                  style={{ marginBottom: "16px" }}
+                />
+                <TextField
+                  label="Student Name"
+                  variant="outlined"
+                  fullWidth
+                  value={paymentDetails.studentName}
+                  onChange={(e) =>
+                    setPaymentDetails({ ...paymentDetails, studentName: e.target.value })
+                  }
+                  required
+                  style={{ marginBottom: "16px" }}
+                />
+              </>
+            )}
           </>
         )}
 
