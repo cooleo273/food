@@ -83,3 +83,12 @@
    translate: scale(1.001);/* Slightly enlarge on hover */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Deeper shadow on hover */
 }
+
+@media (max-width: 468px){
+  .cart-item-card{
+    display: flex;
+    flex-direction: column;
+  }
+
+ 
+}
