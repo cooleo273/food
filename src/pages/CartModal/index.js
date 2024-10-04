@@ -134,7 +134,7 @@ const CartModal = ({
               <IconButton onClick={() => updateCartItemQuantity(item, 1)}>
                 <Add />
               </IconButton>
-              <IconButton onClick={() => onRemoveFromCart(item)} color="secondary">
+              <IconButton onClick={() => onRemoveFromCart(item)} color="#ff0000">
                 <Close />
               </IconButton>
             </CardActions>
@@ -330,7 +330,7 @@ const CartModal = ({
         {currentPage === "cart" ? (
           <>
             
-            <Button onClick={onClose} color="secondary">
+            <Button onClick={onClose} style={{  background: "rgb(255, 96, 92)" , color: "#ffffff" }}>
               Close
             </Button>
             <Button
