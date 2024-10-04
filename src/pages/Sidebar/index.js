@@ -140,7 +140,6 @@
           <List>
             {cafes.map((cafe) => (
               <StyledListItem
-                button
                 key={cafe._id}
                 onClick={() => {
                   onCafeSelect(cafe);
