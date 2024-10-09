@@ -14,34 +14,51 @@ const AdminStatusPage = () => {
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [scheduledOrders, setScheduledOrders] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
+  const [selectedCafe, setSelectedCafe] = useState("Cambridge"); // Default cafe selection
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("https://food-server-seven.vercel.app/api/orders")
+    axios
+      .get("https://food-server-seven.vercel.app/api/orders")
       .then((response) => {
-        setOrders(response.data);
-        setFilteredOrders(response.data);
-
-        // Filter for scheduled orders by checking if the order date is in the future (including time)
-        const futureScheduledOrders = response.data.filter(
-          (order) => {
-            const orderDate = dayjs(order.orderDate); // Parse the order date
-            const currentDate = dayjs(); // Current date and time
-
-            
-
-            const isFutureOrder = orderDate.isAfter(currentDate); // Check if the order date is in the future (including time)
-            
-
-            return isFutureOrder && order.paymentStatus === "paid"; // Only future paid orders
-          }
-        );
-
-        console.log('Scheduled Orders:', futureScheduledOrders);
-        setScheduledOrders(futureScheduledOrders); // Update state with future scheduled orders
+        const allOrders = response.data;
+        setOrders(allOrders);
+        filterOrders(allOrders, "Cambridge", "all"); // Initial filter for Cambridge
       })
-      .catch(error => console.error('Error fetching orders:', error));
+      .catch((error) => console.error("Error fetching orders:", error));
   }, []);
+
+  const filterOrders = (orders, cafe, tab, status = null) => {
+    const cafeOrders = orders.filter((order) => order.cafeName === cafe);
+
+    if (tab === "paid") {
+      setFilteredOrders(cafeOrders.filter((order) => order.paymentStatus === "paid"));
+    } else if (tab === "delivered") {
+      setFilteredOrders(cafeOrders.filter((order) => order.orderStatus === "delivered"));
+    } else if (tab === "pending") {
+      setFilteredOrders(cafeOrders.filter((order) => order.orderStatus === "pending"));
+    } else if (tab === "scheduled") {
+      const futureScheduledOrders = cafeOrders.filter(
+        (order) => dayjs(order.orderDate).isAfter(dayjs()) && order.paymentStatus === "paid"
+      );
+      setScheduledOrders(futureScheduledOrders);
+      setFilteredOrders(futureScheduledOrders);
+    } else if (tab === "status" && status) {
+      setFilteredOrders(cafeOrders.filter((order) => order.orderStatus === status));
+    } else {
+      setFilteredOrders(cafeOrders); // Default to all orders for the cafe
+    }
+  };
+
+  const handleTabChange = (tab, status = null) => {
+    setActiveTab(tab);
+    filterOrders(orders, selectedCafe, tab, status); // Pass status when available
+  };
+
+  const handleCafeChange = (cafe) => {
+    setSelectedCafe(cafe); // Update the selected cafe
+    filterOrders(orders, cafe, activeTab); // Filter orders for the selected cafe and active tab
+  };
 
   const updateStatus = (orderId, status) => {
     axios
@@ -71,26 +88,6 @@ const AdminStatusPage = () => {
       });
   };
 
-  const handleTabChange = (tab, status = null) => {
-    setActiveTab(tab);
-
-    if (tab === "paid") {
-      setFilteredOrders(orders.filter((order) => order.paymentStatus === "paid"));
-    } else if (tab === "delivered") {
-      setFilteredOrders(orders.filter((order) => order.orderStatus === "delivered"));
-    } else if (tab === "pending") {
-      setFilteredOrders(orders.filter((order) => order.orderStatus === "pending"));
-    } else if (tab === "status" && status) {
-      // Filter by specific order status when using the dropdown for order statuses
-      setFilteredOrders(orders.filter((order) => order.orderStatus === status));
-    } else if (tab === "scheduled") {
-      // Filter scheduled orders (orders that are paid and in the future)
-      setFilteredOrders(scheduledOrders);
-    } else {
-      setFilteredOrders(orders); // Show all orders
-    }
-  };
-
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
     navigate("/admin-login");
@@ -111,6 +108,29 @@ const AdminStatusPage = () => {
         </div>
       </div>
 
+      {/* Cafe Selection */}
+      <div className="cafe-selection">
+  <button 
+    className={selectedCafe === "Cambridge" ? "selected" : ""} 
+    onClick={() => handleCafeChange("Cambridge")}
+  >
+    Cambridge
+  </button>
+  <button 
+    className={selectedCafe === "Bingham" ? "selected" : ""} 
+    onClick={() => handleCafeChange("Bingham")}
+  >
+    Bingham
+  </button>
+  <button 
+    className={selectedCafe === "Savor" ? "selected" : ""} 
+    onClick={() => handleCafeChange("Savor")}
+  >
+    Savor
+  </button>
+</div>
+
+
       {/* Tab navigation */}
       <div className="tabs">
         <button className={activeTab === "all" ? "active" : ""} onClick={() => handleTabChange("all")}>
@@ -129,11 +149,21 @@ const AdminStatusPage = () => {
           Pre-Orders
         </button>
         <DropdownButton id="dropdown-status" title="Order Status">
-          <Dropdown.Item onClick={() => handleTabChange("status", "being made")}>Being Made</Dropdown.Item>
-          <Dropdown.Item onClick={() => handleTabChange("status", "ready for pickup")}>Ready for Pickup</Dropdown.Item>
-          <Dropdown.Item onClick={() => handleTabChange("status", "out for delivery")}>Out for Delivery</Dropdown.Item>
-          <Dropdown.Item onClick={() => handleTabChange("status", "delivered")}>Delivered</Dropdown.Item>
-          <Dropdown.Item onClick={() => handleTabChange("status", "cancelled")}>Cancelled</Dropdown.Item>
+          <Dropdown.Item onClick={() => handleTabChange("status", "being made")}>
+            Being Made
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => handleTabChange("status", "ready for pickup")}>
+            Ready for Pickup
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => handleTabChange("status", "out for delivery")}>
+            Out for Delivery
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => handleTabChange("status", "delivered")}>
+            Delivered
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => handleTabChange("status", "cancelled")}>
+            Cancelled
+          </Dropdown.Item>
         </DropdownButton>
       </div>
 
@@ -145,28 +175,15 @@ const AdminStatusPage = () => {
               <p className="order-customer">
                 Customer: {order.customerName} ({order.customerPhone})
               </p>
-              {order.parentsName && (
-  <p>Student: {order.parentsName}</p>
-)}
-
+              {order.parentsName && <p>Student: {order.parentsName}</p>}
               <p className="order-items">
-  Items: {order.items?.map(item => `${item?.name || "Unknown item"} (x${item?.quantity || 0})`).join(", ")}
-</p>
-
+                Items: {order.items?.map((item) => `${item?.name || "Unknown item"} (x${item?.quantity || 0})`).join(", ")}
+              </p>
               <p className="order-cafe">Cafe: {order.cafeName}</p>
-              <p className="order-status">
-                Order Status: {order.orderStatus || "Pending"}
-              </p>
-              <p className="order-payment-status">
-                Payment Status: {order.paymentStatus}
-              </p>
-              <p className="order-payment-status">
-                Grade: {order.grade || "No Grade"}
-              </p>
-
-              <p className="order-date">
-          Order Date: {dayjs(order.orderDate).format("YYYY-MM-DD HH:mm:ss")}
-        </p>
+              <p className="order-status">Order Status: {order.orderStatus || "Pending"}</p>
+              <p className="order-payment-status">Payment Status: {order.paymentStatus}</p>
+              <p className="order-payment-status">Grade: {order.grade || "No Grade"}</p>
+              <p className="order-date">Order Date: {dayjs(order.orderDate).format("YYYY-MM-DD HH:mm:ss")}</p>
 
               <div>
                 <DropdownButton id="dropdown-basic-button" title="Actions">
@@ -194,7 +211,7 @@ const AdminStatusPage = () => {
             </div>
           ))
         ) : (
-          <p className="no-orders">No orders available.</p>
+          <p>No orders found for {selectedCafe}.</p>
         )}
       </div>
     </div>

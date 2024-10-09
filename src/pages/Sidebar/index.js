@@ -1,168 +1,88 @@
-  import React, { useState } from "react";
-  import PropTypes from "prop-types";
-  import { styled, useTheme } from "@mui/material/styles";
-  import {
-    Drawer,
-    List,
-    ListItem,
-    ListItemText,
-    IconButton,
-    Typography,
-    Divider,
-    Box,
-  } from "@mui/material";
-  import MenuIcon from "@mui/icons-material/Menu";
-  import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-  import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-  import StarIcon from "@mui/icons-material/Star";
-  import "./index.css";
+import React from "react";
+import PropTypes from "prop-types";
+import { Box, Button, Typography, Card, CardMedia, CardContent } from "@mui/material";
+import StarIcon from "@mui/icons-material/Star";
+import "./index.css"; // Ensure you have appropriate styles
+import img1 from "../../assets/XE9A3446-1536x1024.jpg";
+import img2 from "../../assets/Ethiopia-2880.jpeg"; // Replace with your image paths
+import img3 from "../../assets/2716244.jpg"; // Replace with your image paths
 
-  const drawerWidth = 280;
+const cafesData = [
+  {
+    _id: "1",
+    cafe: "Cambridge",
+    description: "Enjoy a relaxing atmosphere with great coffee and pastries.",
+    image: img1,
+  },
+  {
+    _id: "2",
+    cafe: "Bingham",
+    description: "A cozy spot with a variety of teas and delicious sandwiches.",
+    image: img2,
+  },
+  {
+    _id: "3",
+    cafe: "Savor",
+    description: "Perfect for brunch with friends, serving a wide range of dishes.",
+    image: img3,
+  },
+];
 
-  // Primary and Accent Color Application
-  const primaryColor = "#FE8C00"; // Bold Orange for buttons
-  const backgroundColor = "#F5F5F5"; // Light Gray for background
-  const accentColor = "#4CAF50"; // Turquoise Green for hover and accents
-  const textColor = "#2D2D2D"; // Dark Charcoal for text
-  const highlightColor = "#FFC107"; // Warm Yellow for highlights like stars
+const CafeHomepage = ({ onCafeSelect }) => {
+  const handleCafeSelect = (cafe) => {
+    onCafeSelect(cafe);
+    const cafeName = cafe.cafe.toLowerCase().replace(/\s+/g, ""); // Convert to lowercase and remove spaces
+    window.location.href = `/${cafeName}`; // Navigate to the new route based on cafe name
+  };
 
-  const DrawerHeader = styled("div")(({ theme }) => ({
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: theme.spacing(0, 1),
-    backgroundColor: primaryColor, // Use primary color for header background
-    color: "#fff", // White text
-    ...theme.mixins.toolbar,
-    borderBottom: "1px solid #E64A19", // Slightly darker shade for the border
-  }));
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", padding: 4 }}>
+      <Typography variant="h5" sx={{ marginBottom: 10, fontWeight: 'bold', color: '#FE8C00', fontFamily: "Montserrat" }}>
+        PLease Choose Your Location
+      </Typography>
 
-  const StyledDrawer = styled(Drawer)(({ theme }) => ({
-    width: drawerWidth,
-    flexShrink: 0,
-    "& .MuiDrawer-paper": {
-      width: drawerWidth,
-      backgroundColor: backgroundColor, // Use light gray for background
-      color: textColor, // Dark Charcoal for text
-      boxShadow: "2px 0 15px rgba(0, 0, 0, 0.3)", // Smooth shadow
-      borderRadius: "0 10px 10px 0", // Rounded corner for a modern look
-      transition: theme.transitions.create("width", {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-  
-      // Full width for screens less than 468px
-      [theme.breakpoints.down("sm")]: {
-        width: "100%", // Make it full width
-        borderRadius: 0, // Remove border radius for a full-screen drawer look
-      },
-    },
-  }));
-  
-
-  const StyledListItem = styled(ListItem)(({ theme }) => ({
-      "&:hover": {
-        backgroundColor: accentColor, // Turquoise hover effect
-        transition: "background-color 0.3s ease",
-        cursor: "pointer",
-        "& .MuiListItemText-root": {
-          color: "#fff", // Text turns white on hover
-        },
-        "& svg": {
-          color: "#fff", // Optionally, you can make the star icon white on hover as well
-        },
-      },
-      "& .MuiListItemText-root": {
-        fontWeight: 500,
-        color: textColor, // Ensure the default text color is applied when not hovered
-      },
-      "& svg": {
-        color: highlightColor, // Warm Yellow for the icon (default)
-      },
-    }));
-    
-
-  const CafeSidebar = ({ cafes, onCafeSelect, onToggleDrawer }) => {
-    const theme = useTheme();
-    const [isDrawerOpen, setIsDrawerOpen] = useState(true); // Initially set to false (closed)
-
-    const toggleDrawer = () => {
-      setIsDrawerOpen(!isDrawerOpen);
-      onToggleDrawer(!isDrawerOpen); // Notify parent component of drawer state change
-    };
-
-    return (
-      <Box sx={{ display: "flex" }}>
-        {/* Conditional rendering of the menu and close buttons */}
-        {!isDrawerOpen ? (
-          <IconButton
-            color="inherit"
-            aria-label="toggle drawer"
-            edge="start"
-            onClick={toggleDrawer}
-            sx={{
-              position: "fixed",
-              top: 16,
-              left: 16,
-              zIndex: 1301,
-              backgroundColor: primaryColor,
-              color: "#fff", // Use white text for contrast
-              "&:hover": {
-                backgroundColor: "#E64A19", // Slightly darker on hover
-              },
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-        ) : null}
-
-        {/* Drawer Component */}
-        <StyledDrawer
-          variant="persistent"
-          anchor="left"
-          open={isDrawerOpen}
-        >
-          <DrawerHeader>
-            <Typography variant="h6" noWrap>
-              Cafes
-            </Typography>
-            <IconButton onClick={toggleDrawer}>
-              {theme.direction === "ltr" ? (
-                <ChevronLeftIcon style={{ color: "#fff" }} />
-              ) : (
-                <ChevronRightIcon style={{ color: "#fff" }} />
-              )}
-            </IconButton>
-          </DrawerHeader>
-          <Divider sx={{ backgroundColor: "#E64A19" }} />
-
-          {/* Cafe List */}
-          <List>
-            {cafes.map((cafe) => (
-              <StyledListItem
-                key={cafe._id}
-                onClick={() => {
-                  onCafeSelect(cafe);
-                  toggleDrawer(); // Close drawer after selection if needed
+      <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 10, fontFamily: "Montserrat" }}>
+        {cafesData.map((cafe) => (
+          <Card key={cafe._id} sx={{ width: 300, borderRadius: 4, boxShadow: 3, transition: '0.3s', '&:hover': { transform: 'scale(1.05)' }, fontFamily: "Montserrat", display: "flex", flexDirection: "column" }}>
+            <CardMedia
+              component="img"
+              height="180"
+              image={cafe.image}
+              alt={cafe.cafe}
+            />
+            <CardContent sx={{ backgroundColor: '#fff' }}>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#333', fontFamily: "Montserrat" }}>
+                {cafe.cafe}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ marginBottom: 1 , fontFamily: "Montserrat", fontWeight:"500"}}>
+                {cafe.description}
+              </Typography>
+              <Button
+                onClick={() => handleCafeSelect(cafe)}
+                variant="contained"
+                startIcon={<StarIcon />}
+                sx={{
+                  marginTop: 1,
+                  width: "100%",
+                  backgroundColor: "#FE8C00",
+                  color: "#fff",
+                  "&:hover": {
+                    backgroundColor: "#D97D00",
+                  },
                 }}
               >
-                <StarIcon />
-                <ListItemText
-                  primary={cafe.cafe}
-                  sx={{ marginLeft: 2, color: textColor, padding: 0 }} // Dark Charcoal for list text
-                />
-              </StyledListItem>
-            ))}
-          </List>
-        </StyledDrawer>
+                Select
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
       </Box>
-    );
-  };
+    </Box>
+  );
+};
 
-  CafeSidebar.propTypes = {
-    cafes: PropTypes.array.isRequired,
-    onCafeSelect: PropTypes.func.isRequired,
-    onToggleDrawer: PropTypes.func.isRequired, // Callback to notify the parent component
-  };
+CafeHomepage.propTypes = {
+  onCafeSelect: PropTypes.func.isRequired,
+};
 
-  export default CafeSidebar;
+export default CafeHomepage;

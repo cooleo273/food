@@ -8,8 +8,10 @@ const AdminUpdatePage = () => {
   const [selectedItemId, setSelectedItemId] = useState("");
   const [itemName, setItemName] = useState("");
   const [itemPrice, setItemPrice] = useState("");
-  const [itemDescription, setItemDescription] = useState(""); // New state for description
+  const [itemDescription, setItemDescription] = useState("");
   const [itemCategory, setItemCategory] = useState("");
+  const [itemImage, setItemImage] = useState(null); // New state for item image
+
   const fetchMenus = async () => {
     try {
       const response = await axios.get("https://food-server-seven.vercel.app/api/menu");
@@ -28,16 +30,18 @@ const AdminUpdatePage = () => {
     setSelectedItemId("");
     setItemName("");
     setItemPrice("");
-    setItemDescription(""); 
-    setItemCategory("")// Reset description when menu changes
+    setItemDescription("");
+    setItemCategory("");
+    setItemImage(null); // Reset image when menu changes
   };
 
-  const handleItemSelect = (itemId, name, price, description, category) => {
+  const handleItemSelect = (itemId, name, price, description, category, image) => {
     setSelectedItemId(itemId);
     setItemName(name);
     setItemPrice(price);
     setItemDescription(description);
-    setItemCategory(category) // Set the selected item's description
+    setItemCategory(category);
+    setItemImage(null); // Reset image for selected item
   };
 
   const handleUpdateItem = async () => {
@@ -47,20 +51,27 @@ const AdminUpdatePage = () => {
     }
 
     try {
+      const formData = new FormData();
+      formData.append("name", itemName);
+      formData.append("price", itemPrice);
+      formData.append("description", itemDescription);
+      formData.append("category", itemCategory);
+      if (itemImage) {
+        formData.append("photo", itemImage); // Append the image if it exists
+      }
+
       await axios.put(
         `https://food-server-seven.vercel.app/api/menu/${selectedMenuId}/${selectedItemId}`,
-        {
-          name: itemName,
-          price: itemPrice,
-          description: itemDescription,
-          category: itemCategory, // Include description in the update request
-        }
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } } // Important for file upload
       );
+
       alert("Item updated successfully!");
       setItemName("");
       setItemPrice("");
       setItemDescription("");
-      setItemCategory("") // Clear the form after updating
+      setItemCategory("");
+      setItemImage(null); // Clear the image after updating
       fetchMenus();
     } catch (error) {
       console.error("Error updating item:", error);
@@ -111,7 +122,7 @@ const AdminUpdatePage = () => {
                 <div className="button">
                   <button
                     onClick={() =>
-                      handleItemSelect(item._id, item.name, item.price, item.description, item.category)
+                      handleItemSelect(item._id, item.name, item.price, item.description, item.category, item.photo) // Pass the item photo
                     }
                   >
                     Update
@@ -128,46 +139,51 @@ const AdminUpdatePage = () => {
         </div>
       )}
 
-{selectedItemId && (
-  <div className="item-update-form">
-    <h2>Update Item</h2>
-    <input
-      type="text"
-      placeholder="Item Name"
-      value={itemName}
-      onChange={(e) => setItemName(e.target.value)}
-      className="admin-update-input"
-    />
-    <input
-      type="number"
-      placeholder="Item Price"
-      value={itemPrice}
-      onChange={(e) => setItemPrice(e.target.value)}
-      className="admin-update-input"
-    />
-    <textarea
-      placeholder="Item Description"
-      value={itemDescription}
-      onChange={(e) => setItemDescription(e.target.value)}
-      className="admin-menu-input"
-    />
-    <select
-      value={itemCategory}
-      onChange={(e) => setItemCategory(e.target.value)} // Add a category selection
-      className="select-dropdown"
-    >
-      <option value="">Select Category</option>
-      <option value="breakfast">Breakfast</option>
-      <option value="Main Dish">Main Dish</option>
-      <option value="dessert">Dessert</option>
-      <option value="drinks">Drinks</option>
-    </select>
-    <button onClick={handleUpdateItem} className="admin-update-button">
-      Update Item
-    </button>
-  </div>
-)}
-
+      {selectedItemId && (
+        <div className="item-update-form">
+          <h2>Update Item</h2>
+          <input
+            type="text"
+            placeholder="Item Name"
+            value={itemName}
+            onChange={(e) => setItemName(e.target.value)}
+            className="admin-update-input"
+          />
+          <input
+            type="number"
+            placeholder="Item Price"
+            value={itemPrice}
+            onChange={(e) => setItemPrice(e.target.value)}
+            className="admin-update-input"
+          />
+          <textarea
+            placeholder="Item Description"
+            value={itemDescription}
+            onChange={(e) => setItemDescription(e.target.value)}
+            className="admin-menu-input"
+          />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setItemImage(e.target.files[0])} // Set the selected image
+            className="admin-update-input"
+          />
+          <select
+            value={itemCategory}
+            onChange={(e) => setItemCategory(e.target.value)}
+            className="select-dropdown"
+          >
+            <option value="">Select Category</option>
+            <option value="breakfast">Breakfast</option>
+            <option value="Main Dish">Main Dish</option>
+            <option value="dessert">Dessert</option>
+            <option value="drinks">Drinks</option>
+          </select>
+          <button onClick={handleUpdateItem} className="admin-update-button">
+            Update Item
+          </button>
+        </div>
+      )}
     </div>
   );
 };
