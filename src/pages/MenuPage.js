@@ -12,7 +12,7 @@
 
   const MenuPage = () => {
     const { cafeName } = useParams(); // Get cafeName from the URL params
-    const [menus, setMenus] = useState([]);
+  
     const [activeCafe, setActiveCafe] = useState(null);
     const [activeTab, setActiveTab] = useState("breakfast");
     const [isCartVisible, setIsCartVisible] = useState(false);
@@ -44,7 +44,6 @@
       axios
       .get("https://food-server-seven.vercel.app/api/menu")
       .then((response) => {
-        setMenus(response.data);
         setLoading(false);
         const cafe = response.data.find((menu) => menu.cafe.toLowerCase() === cafeName.toLowerCase());
         if (cafe) {
